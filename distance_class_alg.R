@@ -1,6 +1,4 @@
 ## writing the algorithm for range class density calculation
-
-
 library(dplyr)
 library(lubridate)
 
@@ -11,12 +9,16 @@ wss_distance <- function(x1, y1, x2, y2){
 
 range_class <- function(wss_data, boar_data, r1, r2, r3){
   
-  #area sizes of range classes in m^2
-  area_r1 <- r1^2*pi
-  area_r2 <- (r2^2*pi) - area_r1
-  area_r3 <- (r3^2*pi) - (r2^2*pi)
+  #area sizes of range classes in ha
+  area_r1 <- (r1^2*pi) / 10000
+  area_r2 <- ((r2^2*pi) - area_r1) / 10000
+  area_r3 <- ((r3^2*pi) - (r2^2*pi)) / 10000
   
+  #data frame for output
   output_frame <- data.frame(wss_id = character(),
+                             r1 = integer(),
+                             r2 = integer(),
+                             r3 = integer(),
                              nfix_r1 = double(),
                              nfix_r2 = double(),
                              nfix_r3 = double(),
@@ -33,8 +35,8 @@ range_class <- function(wss_data, boar_data, r1, r2, r3){
     wss_end <- wss_data[row, 'datum_off']
     
     boar_data%>%
-      filter(as_date(datum_on) >= as_date(wss_start),
-              as_date(datum_on) >= as_date(wss_end))%>%
+      filter(as_date(DateTimeUTC) >= as_date(wss_start),
+              as_date(DateTimeUTC) <= as_date(wss_end))%>%
       mutate(dist = wss_distance(E_wss, N_wss, boar_data$E, boar_data$N))
       
     fixes_r1 <- boar_data%>%
@@ -54,6 +56,9 @@ range_class <- function(wss_data, boar_data, r1, r2, r3){
     
     add_row(output_frame,
             wss_id = id,
+            r1 = r1,
+            r2 = r2,
+            r3 = r3,
             nfix_r1 = n_r1, 
             nfix_r2 = n_r2,
             nfix_r3 = n_r3,
@@ -61,6 +66,8 @@ range_class <- function(wss_data, boar_data, r1, r2, r3){
             dens_r2 = rho_r2,
             dens_r3 = rho_r3)
   }
+  
+  return(output_frame)
 }
 
 
