@@ -1,0 +1,18 @@
+library(devtools)
+library(readr)
+library(sf)
+library(terra)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(tmap)
+library(sp)
+
+# install.packages("devtools") # <- if you havent installed devtools already
+devtools::install_github("ComputationalMovementAnalysis/ComputationalMovementAnalysisData")
+library(ComputationalMovementAnalysisData)
+head(wildschwein_BE)
+head(wildschwein_metadata)
+head(wildschwein_overlap_temp)
+head(schreck_agenda)
+head(schreck_locations)
