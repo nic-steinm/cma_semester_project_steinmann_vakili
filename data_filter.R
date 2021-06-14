@@ -32,6 +32,6 @@ wildschweinschreck_locations <- wildschweinschreck_locations %>% left_join(schre
 head(wildschwein_BE)
 head(wildschweinschreck_locations)
 ueli <- wildschwein_BE %>% filter(TierName=="Ueli")
-ueli <- ueli %>% filter(hour(DatetimeUTC)< 6 | hour(DatetimeUTC) > 20) # night
-
+ueli <- ueli %>% filter(hour(DatetimeUTC)< 6 | hour(DatetimeUTC) > 20)
+ueli <- ueli %>% filter(month(DatetimeUTC)< 5 | month(DatetimeUTC) > 9)
 
