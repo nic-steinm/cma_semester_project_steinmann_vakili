@@ -1,5 +1,6 @@
 library(lubridate)
 library(dplyr)
+library(tibble)
 library(sf)
 library(ComputationalMovementAnalysisData)
 
@@ -17,7 +18,7 @@ lv95_coords <- locations_sf%>%
 #Joining agenda and locations and filtering by date
 joined_tables_device_locs <- left_join(lv95_coords, schreck_agenda , by = c("id" = "id"))%>%
   filter(as.integer(month(as_date(datum_on))) >= 5  &  as.integer(month(as_date(datum_on))) <= 9)%>%
-  select(-geometry) #deleting geometry column
+  select(-geometry)
   
 #Step 2: Filter the boar location data
 head(wildschwein_BE)
