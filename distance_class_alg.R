@@ -34,16 +34,16 @@ range_class <- function(wss_data, boar_data, r1, r2, r3){
     wss_start <- wss_data[row, 'datum_on']
     wss_end <- wss_data[row, 'datum_off']
     
-    boar_data%>%
+    boar_data_filtered <- boar_data%>%
       filter(as_date(DateTimeUTC) >= as_date(wss_start),
               as_date(DateTimeUTC) <= as_date(wss_end))%>%
-      mutate(dist = wss_distance(E_wss, N_wss, boar_data$E, boar_data$N))
+      mutate(dist = wss_distance(E_wss, N_wss, E, N))
       
-    fixes_r1 <- boar_data%>%
+    fixes_r1 <- boar_data_filtered%>%
       filter(dist <= r1,)
-    fixes_r2 <- boar_data%>%
+    fixes_r2 <- boar_data_filtered%>%
       filter(dist > r1, dist <= r2)
-    fixes_r3 <- boar_data%>%
+    fixes_r3 <- boar_data_filtered%>%
       filter(dist > r2, dist <= r3)
     
     n_r1 <- length(fixes_r1)
