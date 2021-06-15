@@ -12,7 +12,6 @@ library(sp)
 library(ComputationalMovementAnalysisData)
 
 
-
 wss_distance <- function(x1, y1, x2, y2){
   sqrt((x1-x2)^2+(y1-y2)^2)
 } 
@@ -26,9 +25,9 @@ boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
 
 
 #area sizes of range classes in ha
-area_r1 <- (r1^2*pi) / 10000
-area_r2 <- ((r2^2*pi) - area_r1) / 10000
-area_r3 <- ((r3^2*pi) - (r2^2*pi)) / 10000
+area_r1 <- round(((r1^2*pi) / 10000), 3)
+area_r2 <- round((((r2^2*pi) - area_r1) / 10000), 3)
+area_r3 <- round((((r3^2*pi) - (r2^2*pi)) / 10000), 3)
   
   #add columns for the results of the calculations
 wss_data <- wss_data %>%
@@ -45,12 +44,12 @@ wss_data <- wss_data %>%
                rho_r2 = NA,
                rho_r3 = NA)
   
-  
-  for (row in 1:nrow(wss_data)){
-    E_wss <- wss_data[row, 'E']
-    N_wss <- wss_data[row, 'N']
-    wss_start <- wss_data[row, 'datum_on']
-    wss_end <- wss_data[row, 'datum_off']
+
+for (i in 1:(nrow(wss_data))){
+    E_wss <- wss_data[i, 'E']
+    N_wss <- wss_data[i, 'N']
+    wss_start <- wss_data[i, 'datum_on'])
+    wss_end <- wss_data[i, 'datum_off'])
     
     boar_data_filtered <- boar_data%>%
       filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
@@ -63,12 +62,11 @@ wss_data <- wss_data %>%
     fixes_r3 <- boar_data_filtered%>%
       filter(dist > r2 & dist <= r3)
     
-    boar_data_filtered[row, 'n_r1'] <- nrow(fixes_r1)
-    boar_data_filtered[row, 'n_r2'] <- nrow(fixes_r2)
-    boar_data_filtered[row, 'n_r3'] <- nrow(fixes_r3)
+    boar_data_filtered[i, 'n_r1'] <- nrow(fixes_r1)
+    boar_data_filtered[i, 'n_r2'] <- nrow(fixes_r2)
+    boar_data_filtered[i, 'n_r3'] <- nrow(fixes_r3)
     
-    boar_data_filtered[row, 'rho_r1'] <- boar_data_filtered[row, 'n_r1']/area_r1
-    boar_data_filtered[row, 'rho_r2'] <- boar_data_filtered[row, 'n_r2']/area_r2
-    boar_data_filtered[row, 'rho_r3'] <- boar_data_filtered[row, 'n_r3']/area_r3
-    }
-
+    boar_data_filtered[i, 'rho_r1'] <- boar_data_filtered[i, 'n_r1']/area_r1
+    boar_data_filtered[i, 'rho_r2'] <- boar_data_filtered[i, 'n_r2']/area_r2
+    boar_data_filtered[i, 'rho_r3'] <- boar_data_filtered[i, 'n_r3']/area_r3
+}
