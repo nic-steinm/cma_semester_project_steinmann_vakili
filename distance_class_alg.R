@@ -48,8 +48,8 @@ wss_data <- wss_data %>%
 for (i in 1:(nrow(wss_data))){
     E_wss <- wss_data[i, 'E']
     N_wss <- wss_data[i, 'N']
-    wss_start <- wss_data[i, 'datum_on'])
-    wss_end <- wss_data[i, 'datum_off'])
+    wss_start <- wss_data[i, 'datum_on']
+    wss_end <- wss_data[i, 'datum_off']
     
     boar_data_filtered <- boar_data%>%
       filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
