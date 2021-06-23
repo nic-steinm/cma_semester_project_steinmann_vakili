@@ -37,11 +37,10 @@ server <- function(input, output){
     st_as_sf(coords = c("E", "N"), crs = 2056)
   
   #calculating buffers
-  observe({
-    wss_buffer1 <- st_buffer(wss_geom, dist = 50)
-    wss_buffer2 <- st_buffer(wss_geom, dist = 150)
-    wss_buffer3 <- st_buffer(wss_geom, dist = 300)
-  })
+  wss_buffer1 <- st_buffer(wss_geom, dist = 50)
+  wss_buffer2 <- st_buffer(wss_geom, dist = 150)
+  wss_buffer3 <- st_buffer(wss_geom, dist = 300)
+ 
   
   #KDE calculation
   cell_size <- 200
@@ -56,14 +55,15 @@ server <- function(input, output){
 
   tmap_mode("view")
   
- output$my_tmap = renderTmap({ tm_shape(kde_boars)+
-    tm_polygons(col = "kde_value", palette = "viridis", alpha = 0.3, style = "jenks")+
+  output$my_tmap = renderTmap({ 
+    tm_shape(kde_boars)+
+      tm_polygons(col = "kde_value", palette = "viridis", alpha = 0.3, style = "jenks")+
     tm_shape(wss_buffer3)+
-    tm_polygons(col = "black", alpha = 0.1) + 
+      tm_polygons(col = "black", alpha = 0.1) + 
     tm_shape(wss_buffer2)+
-    tm_polygons(col = "black", alpha = 0.1)+
+      tm_polygons(col = "black", alpha = 0.1)+
     tm_shape(wss_buffer1)+
-    tm_polygons(col = "black", alpha = 0.1)
+      tm_polygons(col = "black", alpha = 0.1)
  })
 }
 
