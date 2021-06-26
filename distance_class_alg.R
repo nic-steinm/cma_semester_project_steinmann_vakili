@@ -80,7 +80,7 @@ wss_data <- wss_data %>%
 
 #filtering data entries with no boar locations in r1
 wss_data <- wss_data%>%
-  filter(n_r1_on != 0)
+  filter(n_r1_on != 0 & n_r2_on != 0 & n_r3_on != 0)
 
 #Running the algorithm for time before switched on
 
