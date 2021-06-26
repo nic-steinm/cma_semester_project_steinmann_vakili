@@ -27,9 +27,9 @@ joined_tables_device_locs <- st_set_geometry(joined_tables_device_locs, NULL)
 head(wildschwein_BE)
 
 boar_locs_filtered <- wildschwein_BE%>% 
-  filter(hour(DatetimeUTC) <= 6  |  hour(DatetimeUTC) >= 20)%>%
-  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)
-
+  filter(hour(DatetimeUTC) <= 6  |  hour(DatetimeUTC) >= 20)%>% #Corrected AND/OR statements: | = OR, & = AND, also used >= instead of > to include the month specified
+  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)#%>% #Changed thresholds so we get also data before and after the wildschweinschreck installation
+#filter(TierName=="Ueli") #I would suggest using all individuals as this gives us more data to work with
 
 
 write.csv(joined_tables_device_locs, file = "data/device_locations_filtered.csv")
