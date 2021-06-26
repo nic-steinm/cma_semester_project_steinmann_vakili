@@ -14,11 +14,9 @@ boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
 
 
 ui <- fluidPage(
-  sliderInput("radius1", "Choose range 1 [m]:", min = 1, max = 1000, value = 50),
-  sliderInput("radius2", "Choose range 2 [m]:", min = 1, max = 1000, value = 150),
-  sliderInput("radius3", "Choose range 3 [m]:", min = 1, max = 1000, value = 300),
   
   sliderInput("cellsize", "Choose cell size [m]", min = 100, max = 750, value = 200),
+  selectInput("device", "Choose deterrence device:", c(1:nrow(wss_data))),
   
   tmapOutput("boarmap")
   )
@@ -54,22 +52,24 @@ server <- function(input, output, session){
   boar_geom <- boar_data%>%
     st_as_sf(coords = c("E", "N"), crs = 2056)
   
-  #calculating buffers
+  #calculating ranges
   wss_buffer1 <- st_buffer(wss_geom, dist = 50)
   wss_buffer2 <- st_buffer(wss_geom, dist = 150)
   wss_buffer3 <- st_buffer(wss_geom, dist = 300)
   
-  
+ 
   #honeycomb grid binning
   cell_size <- 200
 
   grid_boars <- hex_grids(boar_geom, cell_size)
 
+  
+  
   tmap_mode("view")
-  tmap_style("cobalt")
-
+  
   #tmap-mapping
-  output$boarmap <- renderTmap({ 
+  output$boarmap <- renderTmap({
+    tmap_style("cobalt")+
     tm_shape(grid_boars)+
       tm_fill(col = "n",
             alpha = 0.5,
@@ -78,12 +78,8 @@ server <- function(input, output, session){
             id = "n",
             legend.hist = TRUE,
             zindex = 1)+
-      tm_shape(wss_buffer1)+
-        tm_borders(col = "white", zindex = 2)+
-      tm_shape(wss_buffer2)+
-        tm_borders(col = "white", zindex = 3)+
-      tm_shape(wss_buffer3)+
-        tm_borders(col = "white", zindex = 4)
+    tm_shape(wss_geom)+
+      tm_dots(col= "green")
     })
   
     observe({
@@ -93,17 +89,13 @@ server <- function(input, output, session){
       
       boar_geom <- boar_data%>%
         st_as_sf(coords = c("E", "N"), crs = 2056)
-      
-      #calculating buffers
-      wss_buffer1 <- st_buffer(wss_geom, dist = input$radius1 )
-      wss_buffer2 <- st_buffer(wss_geom, dist = input$radius2)
-      wss_buffer3 <- st_buffer(wss_geom, dist = input$radius3)
-      
+     
       #honeycomb grid binning
       cell_size <- input$cellsize
       
       grid_boars <- hex_grids(boar_geom, cell_size)
         
+      #tmap_proxy
       tmapProxy("boarmap", session,{
         tm_shape(grid_boars)+
           tm_remove_layer(1)+
@@ -113,16 +105,7 @@ server <- function(input, output, session){
                   style = "jenks",
                   id = "n",
                   legend.hist = TRUE,
-                  zindex = 1)+
-          tm_shape(wss_buffer1)+
-            tm_remove_layer(2)+
-            tm_borders(col = "white", zindex = 2)+
-          tm_shape(wss_buffer2)+
-            tm_remove_layer(3)+
-            tm_borders(col = "white", zindex = 3)+
-          tm_shape(wss_buffer3)+
-            tm_remove_layer(4)+
-            tm_borders(col = "white", zindex = 4)
+                  zindex = 1)
       })
       
     })
