@@ -34,3 +34,28 @@ boar_locs_filtered <- wildschwein_BE%>%
 
 write.csv(joined_tables_device_locs, file = "data/device_locations_filtered.csv")
 write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
+
+
+
+
+# Speed
+boar_locs_filtered$timelag  <- as.integer(difftime(lead(boar_locs_filtered$DatetimeUTC), boar_locs_filtered$DatetimeUTC, units = "sec"))
+boar_locs_filtered <- group_by(boar_locs_filtered,TierID)
+boar_locs_filtered$steplength <- as.numeric(sqrt((boar_locs_filtered$E - lead(boar_locs_filtered$E,1))^2 + (boar_locs_filtered$N - lead(boar_locs_filtered$N,1))^2))
+boar_locs_filtered$speed <- as.numeric(boar_locs_filtered$steplength/boar_locs_filtered$timelag)
+boar_locs_filtered <-  wildschwein_BE %>%
+  group_by(TierName) %>%
+  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+boar_locs_filtered <- wildschwein_BE %>% 
+  group_by(TierName) %>%
+  mutate(speed = steplength/timelag)
+    
+
+
+
+
+
+
+
+
+# Statistical Analysis
