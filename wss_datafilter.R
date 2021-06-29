@@ -3,6 +3,8 @@ library(dplyr)
 library(tibble)
 library(sf)
 library(ComputationalMovementAnalysisData)
+library(readr)        
+library(ggplot2)      
 
 #Step 1: Reprojecting, Filtering and joining of deterrence device locations
 head(schreck_agenda)
@@ -51,6 +53,31 @@ boar_locs_filtered <- boar_locs_filtered %>%
   mutate(speed = steplength/timelag)
     
 
-
 # Statistical Analysis
+ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
+  geom_line()
 
+
+ggplot(boar_locs_filtered, aes(timelag)) +
+  geom_histogram(binwidth = 50) +
+  lims(x = c(0,15000)) +
+  scale_y_log10()
+
+
+boar_locs_filtered %>%
+  filter(year(DatetimeUTC)  == 2014) %>%
+  ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
+  geom_line() +
+  geom_point()
+
+boar_locs_filtered %>%
+  filter(year(DatetimeUTC)  == 2015) %>%
+  ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
+  geom_line() +
+  geom_point()
+
+boar_locs_filtered %>%
+  filter(year(DatetimeUTC)  == 2016) %>%
+  ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
+  geom_line() +
+  geom_point()
