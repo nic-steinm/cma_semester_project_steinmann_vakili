@@ -97,7 +97,7 @@ joined_tables_device_locs <- st_set_geometry(joined_tables_device_locs, NULL)
 
 ```
 
-The boar location data set contains more than 300'000 entries or location fixes in its raw form and not all of them are of use for this analysis. Here we also applied a filter to remove all the day time fixes, as boars typically feed in the cover of the night and the Wildschweinschreck devices were also only active after dark. Secondly, the fixes between November and March were excluded, this was done for the same reason as for the WSS location data, a longer time frame was included however, so that there were definitely enough fixes to compare the before and after state with the active state for all the device locations. This filtering left us with still more than 100'000 fixes to work with. For the remaining data velocity was calculated for each fix, this gives us another movement variable to work with other than fix density.
+The boar location data set contains more than 300'000 entries or location fixes in its raw form and not all of them are of use for this analysis. Here we also applied a filter to remove all the day time fixes, as boars typically feed in the cover of the night and the Wildschweinschreck devices were also only active after dark. Secondly, the fixes between November and March were excluded, this was done for the same reason as for the WSS location data, a longer time frame was included however, so that there were definitely enough fixes to compare the before and after state with the active state for all the device locations. This filtering left us with still more than 100'000 fixes to work with. For the remaining data velocity was calculated for each location, this gives us another movement variable to work with other than point density.
 
 ```{r}
 #PRELIMINARY CODE: Step 2: Preprocessing boar location data
@@ -113,7 +113,7 @@ write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
 
 #Processing:
 
-As our data was now ready, the algorithm for our analysis could be implemented. We first planned to use geometric operations with spatial features, but as our calculations are mostly based around distance measures, we were able to get by with simple pythagorean math. As a first step, a distance calculation function was defined to make the following code a bit more tidy. Then, the desired range parameters in metres are defined. 
+As the data was now ready, the algorithm for our analysis could be implemented. We first planned to use geometric operations with spatial features, but as our calculations are mostly based around distance measures, we were able to get by with simple pythagorean math. As a first step, a distance calculation function was defined to make the following code a bit more tidy. Then, the desired range parameters in metres are defined. 
 
 ```{r}
 
@@ -199,7 +199,7 @@ Based on the distances, the boar location dataset can be subsetted based on the 
 
 ```
 
-Despite the seemingly vast amount of location data, many boars seemed not to have been in the right place at the right time, as many range classes did not contain any fixes at all. These are of no use to our analysis and need to be discarded. This leaves only eight out of the initial 61 WSS locations to work with. 
+Despite the seemingly vast amount of location data, many boars seemed not to have been in the right place at the right time, as most range classes did not contain any fixes at all. These are of no use to our analysis and need to be discarded. This leaves only eight out of the initial 61 WSS locations to work with. 
 
 ```{r}
 

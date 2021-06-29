@@ -7,27 +7,18 @@ library(sf)
 library(readr)
 library(tmap)
 library(shiny)
+library(RColorBrewer)
 
 wss_data <- read_delim("data/range_class_data.csv", delim = ",")
 boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
 
-
-
-ui <- fluidPage(
+wss_data <- wss_data%>%
+  mutate(id = paste(as.character(X1), ":", " ", flurname, sep = ""))
   
-  sliderInput("cellsize", "Choose cell size [m]", min = 100, max = 750, value = 200),
-  selectInput("device", "Choose deterrence device:", c(1:nrow(wss_data))),
+#functions
+hex_grids <- function(geom, extent, cell_size){
   
-  tmapOutput("boarmap")
-  )
-
-
-server <- function(input, output, session){
-  
-  #functions
-  hex_grids <- function(geom, cell_size){
-  
-  grid <- geom%>%
+  grid <- extent%>%
     create_grid_hexagonal(cell_size = cell_size)%>%
     st_sf()%>%
     mutate(id_hex = 1:n())%>%
@@ -39,76 +30,84 @@ server <- function(input, output, session){
     count(id_hex)
   
   hex_grid_geom <- grid%>%
-    left_join(grid_count)%>%
-    filter(!is.na(n))
+    left_join(grid_count)#%>%
+    #filter(!is.na(n))
+  
+  hex_grid_geom[is.na(hex_grid_geom)] <- 0
   
   return(hex_grid_geom)
 }
 
-  #converting to geometry  
-  wss_geom <- wss_data%>%
-    st_as_sf(coords = c("E", "N"), crs = 2056)
-  
-  boar_geom <- boar_data%>%
-    st_as_sf(coords = c("E", "N"), crs = 2056)
-  
-  #calculating ranges
-  wss_buffer1 <- st_buffer(wss_geom, dist = 50)
-  wss_buffer2 <- st_buffer(wss_geom, dist = 150)
-  wss_buffer3 <- st_buffer(wss_geom, dist = 300)
-  
+#converting to geometry
+wss_geom <- wss_data%>%
+  st_as_sf(coords = c("E", "N"), crs = 2056)%>%
+  filter(X1 == 4)
+
+#Setting parameters
+cell_size <- 100 #cell size in meters for the grid binning
+wss_buffer1 <- st_buffer(wss_geom, dist = 50)
+wss_buffer2 <- st_buffer(wss_geom, dist = 150)
+wss_buffer3 <- st_buffer(wss_geom, dist = 300)
+
+donut_2 <- st_difference(wss_buffer2, wss_buffer1)
+donut_3 <- st_difference(wss_buffer3, wss_buffer2)
+
+start_date <- wss_geom$datum_on
+end_date <- wss_geom$datum_off
+n_seconds <- as.numeric(difftime(end_date, start_date, units = "secs"))
+
  
-  #honeycomb grid binning
-  cell_size <- 200
+#honeycomb grid binning on and before on
+boar_geom_on <- st_as_sf(boar_data, coords = c("E", "N"), crs = 2056)
+boar_bbox <- st_as_sf(st_make_grid(boar_geom_on, n = 1))
+boar_geom_on <- filter(boar_geom_on, DatetimeUTC >= start_date & DatetimeUTC <= end_date)
 
-  grid_boars <- hex_grids(boar_geom, cell_size)
+#change to before interval
+end_date <- start_date
+start_date <- start_date - n_seconds
+
+boar_geom_bon <- boar_data%>%
+  st_as_sf(coords = c("E", "N"), crs = 2056)%>%
+  filter(DatetimeUTC >= start_date & DatetimeUTC <= end_date)
+
+
+
+#Calculating hex-grid binning for both time intervals
+grid_boars_on <- hex_grids(boar_geom_on, boar_bbox, cell_size)
+grid_boars_bon <- hex_grids(boar_geom_bon, boar_bbox, cell_size)%>%
+  st_drop_geometry()
+
+grid_boars_join <- left_join(grid_boars_on, grid_boars_bon, by = c("id_hex" = "id_hex"), suffix = c(".on",".bon"))%>%
+  mutate(diff_on_bon = n.on - n.bon)%>%
+  filter(n.bon != 0 | n.on != 0)%>%
+  select(id_hex, n.bon, n.on, diff_on_bon, geometry)
 
   
-  
-  tmap_mode("view")
-  
-  #tmap-mapping
-  output$boarmap <- renderTmap({
-    tmap_style("cobalt")+
-    tm_shape(grid_boars)+
-      tm_fill(col = "n",
-            alpha = 0.5,
-            palette = "viridis",
-            style = "jenks",
-            id = "n",
-            legend.hist = TRUE,
-            zindex = 1)+
-    tm_shape(wss_geom)+
-      tm_dots(col= "green")
-    })
-  
-    observe({
-      
-      wss_geom <- wss_data%>%
-        st_as_sf(coords = c("E", "N"), crs = 2056)
-      
-      boar_geom <- boar_data%>%
-        st_as_sf(coords = c("E", "N"), crs = 2056)
-     
-      #honeycomb grid binning
-      cell_size <- input$cellsize
-      
-      grid_boars <- hex_grids(boar_geom, cell_size)
-        
-      #tmap_proxy
-      tmapProxy("boarmap", session,{
-        tm_shape(grid_boars)+
-          tm_remove_layer(1)+
-          tm_fill(col = "n",
-                  alpha = 0.5,
-                  palette = "viridis",
-                  style = "jenks",
-                  id = "n",
-                  legend.hist = TRUE,
-                  zindex = 1)
-      })
-      
-    })
-}
 
-app <- shinyApp(ui, server)
+#Setting up the visualisation
+tmap_mode("view")
+tmap_style("cobalt")
+
+tm_shape(grid_boars_join)+
+  tm_fill(col = "diff_on_bon",
+              palette = brewer.pal(5, "RdYlGn"),
+              style = "jenks",
+              midpoint = 0,          
+              alpha = 0.5,
+              id = "diff_on_bon")+
+tm_shape(wss_buffer1)+
+  tm_borders(col = "grey",
+          alpha = 0.5)+
+  tm_text("rho_r1_on", ymod = 0.1, col = "white")+
+tm_shape(donut_2)+
+  tm_borders(col = "grey", 
+          alpha = 0.5)+
+  tm_text("rho_r2_on", ymod = 0.5, col = "white")+
+tm_shape(donut_3)+
+  tm_borders(col = "grey",
+          alpha = 0.5)+
+  tm_text("rho_r3_on", ymod = 1, col = "white")+
+tm_shape(wss_geom)+
+  tm_dots(col = "red")
+  
+  
