@@ -33,18 +33,29 @@ Society philosophy merciful selfish sexuality depths overcome madness. Morality 
 
 ## Introduction
 
-<!-- the following is just a placeholder text, remove it!-->
-Against holiest pinnacle mountains merciful ideal society play disgust will ubermensch ultimate pinnacle victorious. Snare value law gains battle pious intentions revaluation strong. Insofar snare faith ideal oneself.
+Wild boar species spread across Eurasia and Africa and have also been introduced to the Americas. In many of these places, wild boars are considered pests as they cause great damage to crop fields. With too few natural predators left and humans struggling to control their numbers by the means of hunting, population has drastically increased in the past decades which also lead to increased crop damage (CITATION NEEDED). To prevent wild boars from causing damage, several methods have been tried: Shooting the animals is labour intensive and is only allowed at certain times of the year. Putting up electric fences works fine, but requires regular upkeep as boars are often smart enough to surpass them (Suter et. al, 2018). Researchers at ZHAW have thus come up with another method that works acoustically with loud sound emission that are supposed to scare the animals away from agricultural fields. This is called the "Wildschweinschreck" (meaning wild-boar-scarer). This system requires minimal maintenance and labour cost a it turns automatically at night, only requiring occassional battery changes.  
 
-<!-- the following is just a placeholder text, remove it!-->
-Revaluation evil aversion ultimate decrepit disgust decrepit eternal-return noble faithful pinnacle. Truth ascetic inexpedient decrepit free. Ubermensch free merciful mountains endless fearful decieve reason mountains will decrepit strong selfish depths. Overcome faith snare gains oneself transvaluation.
+Location data of boars living in the area was collected in order to assess the effectiveness of this device, to find out if boars sustainably avoid the area during and after the device is activated. Determining these effects using Computational Movement Analyis is the subject of this semester project, using spatio-temporal analysis analysis techniques and algorithms we want to find out at which distances to the device the "Wildschweinschreck" remains effective. This is intended to be done by calculating different location and movement parameters aggregated in different range classes (eg. 0-50m, 50-100m ...) around the device when it is active and compare it to a state (eg. before, during, after) were the device is shut off. The density and velocity of the boars within those range classes will act as the indicator whether the deterrence device has a lasting effect on the animals movement patterns. To illustrate this method, we deviced a conceptual model that should make the process very clear (IMAGE REFERENCE). The range classes are spatial entities arranged in concentrical circles around the device location. Important to remember is that these circles do not intersect as that would include certain locations multiple times. Apart from the innermost circle, all the circles are donut-shaped with the smaller donut fitting snugly into the hole of the larger donut and so forth. This gives us the area in a predefined 
+
+## Study Area
+The study area of this data analyisis lies in the "Drei-Seen-Land" in the western part of Switzerland between Lake Biel and Lake Neuchatel, just north of Lake Murten. It consists of small villages surrounded by agricultural fields, forests and wetlands and goes by the place name "Fanel". As part of a research project conducted by the Zurich University of Applied Science (ZHAW) it was one of five areas chosen to demonstrate and research the effects of a newly developed acoustic "Wildschweinschreck" deterrence device against wild boars. It was chosen because it is a suitable habitat for wild boar and, because of its proximity to agricultural fields, an area with a high incidence of wild boar damages to crops. On 46 fields, the Wildschweinschreck was installed and tested between 2013-2017 (Suter et al., 2018).
+
+##The Data
+
+Movement Data: 
+
+The movement data was collected by using GPS transponders on a collar that were put on wild boar captured by tranquilizer gun or wildlife traps. In all of the study areas, 36 wild boar were equipped with tracking device and location data was gathered between 2014 and 2017 (Suter et al. 2018). 
+
+Deterrence Device Data: 
+
+In addition to the raw movement data spatio-temporal informateion of the devices were needed for this analyis. This consists of a list with all the locations and further information about the device setup (e.g installation height) and about the fields they were placed in (e.g. crop type, place name etc). Another list contains the time intervals these devices were active and detailed information about the chosen device settings, such as volume, direction and interval. The list with the time intervalls is longer than the location list (69 to 57) because at some locations the device was activated multiple times. By joining these two table we received a single table containing all the instances this device was activated with both the location and time data, which is the minimum needed for this analysis to work. 
 
 
 ##Material and Methods
 
-#Packages used:
+Packages used:
 
-Prominently used in this project are the dplyr, lubridate, sf, sp, tmap, shiny and ggplot packages.
+Prominently used in this project are the dplyr, lubridate, sf, sp, tmap, and ggplot packages.
 
 ```{r}
 library(devtools)
@@ -73,7 +84,7 @@ head(wildschwein_BE)
 
 #Pre-Processing:
 
-The Wildschweinschreck locations first needed to be reprojected as they initally were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. The Wildschweinschreck serves to protect crops so it made sense to filter it this way.
+The Wildschweinschreck locations first needed to be reprojected as they initally were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. The Wildschweinschreck serves to protect crops so it is sensible to filter it this way.
 
 ```{r}
 
@@ -268,5 +279,6 @@ Philosophy oneself passion play fearful self noble zarathustra deceptions sexual
 ## Discussion
 
 <!-- the following is just a placeholder text, remove it!-->
-Justice convictions spirit sexuality insofar free marvelous joy. Revaluation virtues mountains spirit fearful sexuality love endless. Society intentions will noble burying aversion moral. Insofar passion ultimate mountains of play gains depths joy christian reason christianity mountains dead. Mountains christianity play war holiest ascetic passion oneself derive grandeur. Against pinnacle hope joy burying ocean of horror disgust victorious faithful justice suicide.
+
+## Bibliography
 
