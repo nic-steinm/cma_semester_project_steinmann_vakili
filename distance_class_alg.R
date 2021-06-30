@@ -46,37 +46,45 @@ wss_data <- wss_data %>%
              n_r3_on = 0,
              rho_r1_on = 0,
              rho_r2_on = 0,
-             rho_r3_on = 0)
+             rho_r3_on = 0,
+             meansl_r1_on = 0,
+             meansl_r2_on = 0,
+             meansl_r3_on = 0)
+    
 
-
-  for (i in 1:nrow(wss_data)){
-    E_wss <- wss_data$E[i]
-    N_wss <- wss_data$N[i]
-    wss_start <- wss_data$datum_on[i]
-    wss_end <- wss_data$datum_off[i]
-    n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
+for (i in 1:nrow(wss_data)){
+  E_wss <- wss_data$E[i]
+  N_wss <- wss_data$N[i]
+  wss_start <- wss_data$datum_on[i]
+  wss_end <- wss_data$datum_off[i]
+  n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
   
-    boar_data_filtered <- boar_data%>%
-      filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
-      mutate(dist = wss_distance(E_wss, N_wss, E, N))
+  boar_data_filtered <- boar_data%>%
+    filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
+    mutate(dist = wss_distance(E_wss, N_wss, E, N))
   
-    fixes_r1 <- boar_data_filtered%>%
-      filter(dist <= r1)
-    fixes_r2 <- boar_data_filtered%>%
-      filter(dist > r1 & dist <= r2)
-    fixes_r3 <- boar_data_filtered%>%
-      filter(dist > r2 & dist <= r3)
+  fixes_r1 <- boar_data_filtered%>%
+    filter(dist <= r1)
+  fixes_r2 <- boar_data_filtered%>%
+    filter(dist > r1 & dist <= r2)
+  fixes_r3 <- boar_data_filtered%>%
+    filter(dist > r2 & dist <= r3)
   
-    #number of fixes in each range class and specified time interval
-    wss_data$n_r1_on[i] <- nrow(fixes_r1)
-    wss_data$n_r2_on[i] <- nrow(fixes_r2)
-    wss_data$n_r3_on[i] <- nrow(fixes_r3)
+  #number of fixes in each range class and specified time interval
+  wss_data$n_r1_on[i] <- nrow(fixes_r1)
+  wss_data$n_r2_on[i] <- nrow(fixes_r2)
+  wss_data$n_r3_on[i] <- nrow(fixes_r3)
   
-    #boar density per hectare and day, to make relative numbers comparable
-    wss_data$rho_r1_on[i] <- round((wss_data$n_r1_on[i]/area_r1)/n_days, 2)
-    wss_data$rho_r2_on[i] <- round((wss_data$n_r2_on[i]/area_r2)/n_days, 2)
-    wss_data$rho_r3_on[i] <- round((wss_data$n_r3_on[i]/area_r3)/n_days, 2)
-    }
+  #boar density per hectare and day, to make relative numbers comparable
+  wss_data$rho_r1_on[i] <- round((wss_data$n_r1_on[i]/area_r1)/n_days, 2)
+  wss_data$rho_r2_on[i] <- round((wss_data$n_r2_on[i]/area_r2)/n_days, 2)
+  wss_data$rho_r3_on[i] <- round((wss_data$n_r3_on[i]/area_r3)/n_days, 2)
+  
+  #Mean steplength
+  wss_data$meansl_r1_on[i] <- mean(fixes_r1$steplength)
+  wss_data$meansl_r2_on[i] <- mean(fixes_r2$steplength)
+  wss_data$meansl_r3_on[i] <- mean(fixes_r3$steplength)
+  }
 
 #filtering data entries with no boar locations in r1
 wss_data <- wss_data%>%
@@ -90,7 +98,10 @@ wss_data <- wss_data %>%
              n_r3_bon = 0,
              rho_r1_bon = 0,
              rho_r2_bon = 0,
-             rho_r3_bon = 0)
+             rho_r3_bon = 0,
+             meansl_r1_bon = 0,
+             meansl_r2_bon = 0,
+             meansl_r3_bon = 0)
 
 
 for (i in 1:nrow(wss_data)){
@@ -120,6 +131,11 @@ for (i in 1:nrow(wss_data)){
   wss_data$rho_r1_bon[i] <- round((wss_data$n_r1_bon[i]/area_r1)/n_days, 2)
   wss_data$rho_r2_bon[i] <- round((wss_data$n_r2_bon[i]/area_r2)/n_days, 2)
   wss_data$rho_r3_bon[i] <- round((wss_data$n_r3_bon[i]/area_r3)/n_days, 2)
+  
+  #Mean steplength
+  wss_data$meansl_r1_bon[i] <- mean(fixes_r1$steplength)
+  wss_data$meansl_r2_bon[i] <- mean(fixes_r2$steplength)
+  wss_data$meansl_r3_bon[i] <- mean(fixes_r3$steplength)
 }
 
 write.csv(wss_data, file = "data/range_class_data.csv")

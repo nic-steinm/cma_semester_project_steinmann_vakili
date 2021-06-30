@@ -42,7 +42,7 @@ write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
 
 
 # Statistical Analysis
-ggplot(boar_locs_filtered, aes(DatetimeUTC,TierName)) +
+ggplot(boar_locs_filtered, aes(DatetimeUTC,TierName), color = ) +
   geom_line()
 
 
