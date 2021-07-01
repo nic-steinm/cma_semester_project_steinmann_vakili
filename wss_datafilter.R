@@ -86,6 +86,7 @@ boar_locs_filtered %>%
   ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
   geom_line() +
   geom_point()
+oih
 
 <<<<<<< HEAD
 ggplot(boar_locs_filtered, aes(speed)) +
