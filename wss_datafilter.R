@@ -4,12 +4,6 @@ library(tibble)
 library(sf)
 library(ComputationalMovementAnalysisData)
 library(readr)        
-<<<<<<< HEAD
-library(ggplot2)  
-library(lattice)
-=======
-library(ggplot2)      
->>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
 
 #Step 1: Reprojecting, Filtering and joining of deterrence device locations
 head(schreck_agenda)
@@ -45,97 +39,4 @@ write.csv(joined_tables_device_locs, file = "data/device_locations_filtered.csv"
 write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
 
 
-    
-# ggPlot
-ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
-  geom_line()
-
-ggplot(boar_locs_filtered, aes(timelag)) +
-=======
-
-
-# Statistical Analysis
-ggplot(boar_locs_filtered, aes(DatetimeUTC,TierName), color = ) +
-  geom_line()
-
-
-ggplot(boar_locs_filtered, aes(timelag)) + #I don't know what that is supposed to tell
->>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
-  geom_histogram(binwidth = 50) +
-  lims(x = c(0,15000)) +
-  scale_y_log10()
-
-<<<<<<< HEAD
-=======
-
->>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
-boar_locs_filtered %>%
-  filter(year(DatetimeUTC)  == 2014) %>%
-  ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
-  geom_line() +
-  geom_point()
-
-boar_locs_filtered %>%
-  filter(year(DatetimeUTC)  == 2015) %>%
-  ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
-  geom_line() +
-  geom_point()
-
-boar_locs_filtered %>%
-  filter(year(DatetimeUTC)  == 2016) %>%
-  ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
-  geom_line() +
-  geom_point()
-oih
-
-<<<<<<< HEAD
-ggplot(boar_locs_filtered, aes(speed)) +
-  geom_histogram(binwidth = 1) +
-  geom_vline(xintercept = mean(boar_locs_filtered$speed,na.rm = TRUE))
-
-boar_locs_filtered %>%
-  ggplot() +
-  geom_path(aes(E,N), alpha = 0.5) +
-  geom_point(aes(E,N,colour = TierName)) +
-  theme_minimal() +
-  coord_equal()
-
-ggplot() +
-  geom_point(data = boar_locs_filtered, aes(x = TierName, y = speed), color = "blue") + 
-  geom_point(data = joined_tables_device_locs, aes(x = id, y = lautstaerke))
-
-ggplot() +
-  geom_point(data = boar_locs_filtered, aes(x = TierName, y = speed), color = "blue") + 
-  geom_point(data = joined_tables_device_locs, aes(x = id, y = modus))
-
-ggplot() +
-  geom_point(data = boar_locs_filtered, aes(x = TierName, y = speed), color = "blue") + 
-  geom_point(data = joined_tables_device_locs, aes(x = id, y = intervall))
-
-ggplot() +
-  geom_point(data = boar_locs_filtered, aes(x = TierName, y = speed), color = "blue") + 
-  geom_point(data = joined_tables_device_locs, aes(x = id, y = jagddruck))
-
-ggplot() +
-  geom_point(data = boar_locs_filtered, aes(x = TierName, y = speed), color = "blue") + 
-  geom_point(data = joined_tables_device_locs, aes(x = id, y = zaun))
-
-ggplot() +
-  geom_point(data = boar_locs_filtered, aes(x = TierName, y = speed), color = "blue") + 
-  geom_point(data = joined_tables_device_locs, aes(x = id, y = installationshohe))
-
-
-# Boxplot
-ggplot(boar_locs_filtered, aes(x = TierName, y = speed)) +           
-  geom_boxplot()
-
-
-
-# Research Questions:
-# How does the movement of the boars change in close and far range of the device? Compare different movement parameters (density, speed, behavior pattern) between device present/not present. 
-# At what ranges the device effects the movement patterns and behavior? 
-# Will they stop moving through the area or will they only stop rummaging? 
-
-
-=======
->>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
+  
