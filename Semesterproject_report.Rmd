@@ -20,7 +20,7 @@ output: html_document
 
 # To set the setting for all code chunks, use the following code:
 
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ```
 
@@ -33,39 +33,246 @@ Society philosophy merciful selfish sexuality depths overcome madness. Morality 
 
 ## Introduction
 
-<!-- the following is just a placeholder text, remove it!-->
-Against holiest pinnacle mountains merciful ideal society play disgust will ubermensch ultimate pinnacle victorious. Snare value law gains battle pious intentions revaluation strong. Insofar snare faith ideal oneself.
+Wild boar species spread across Eurasia and Africa and have also been introduced to the Americas. In many of these places, wild boars are considered pests as they cause great damage to crop fields. With too few natural predators left and humans struggling to control their numbers by the means of hunting, population has drastically increased in the past decades which also lead to increased crop damage (CITATION NEEDED). To prevent wild boars from causing damage, several methods have been tried: Shooting the animals is labour intensive and is only allowed at certain times of the year. Putting up electric fences works fine, but requires regular upkeep as boars are often smart enough to surpass them (Suter et. al, 2018). Researchers at ZHAW have thus come up with another method that works acoustically with loud sound emission that are supposed to scare the animals away from agricultural fields. This is called the "Wildschweinschreck" (meaning wild-boar-scarer). This system requires minimal maintenance and labour cost a it turns automatically at night, only requiring occassional battery changes.  
+
+Location data of boars living in the area was collected in order to assess the effectiveness of this device, to find out if boars sustainably avoid the area during and after the device is activated. Determining these effects using Computational Movement Analyis is the subject of this semester project, using spatio-temporal analysis analysis techniques and algorithms we want to find out at which distances to the device the "Wildschweinschreck" remains effective. This is intended to be done by calculating different location and movement parameters aggregated in different range classes (eg. 0-50m, 50-100m ...) around the device when it is active and compare it to a state (eg. before, during, after) were the device is shut off. The density and velocity of the boars within those range classes will act as the indicator whether the deterrence device has a lasting effect on the animals movement patterns. To illustrate this method, we deviced a conceptual model that should make the process very clear (IMAGE REFERENCE). The range classes are spatial entities arranged in concentrical circles around the device location. Important to remember is that these circles do not intersect as that would include certain locations multiple times. Apart from the innermost circle, all the circles are donut-shaped with the smaller donut fitting snugly into the hole of the larger donut and so forth. This gives us the area in a predefined field.
+
+There are various measures that can be taken to prevent damage to agriculture from wild boar. Most arable farmers keep wild boars out of the field with an electric fence. The fence should be strung with three wires at a height of 20, 40 and 60 centimeters above the ground. This is effective because it prevents the wild boar from hatching or jumping below or above the fence. 
+
+## Study Area
+The study area of this data analyisis lies in the "Drei-Seen-Land" in the western part of Switzerland between Lake Biel and Lake Neuchatel, just north of Lake Murten. It consists of small villages surrounded by agricultural fields, forests and wetlands and goes by the place name "Fanel". As part of a research project conducted by the Zurich University of Applied Science (ZHAW) it was one of five areas chosen to demonstrate and research the effects of a newly developed acoustic "Wildschweinschreck" deterrence device against wild boars. It was chosen because it is a suitable habitat for wild boar and, because of its proximity to agricultural fields, an area with a high incidence of wild boar damages to crops. On 46 fields, the Wildschweinschreck was installed and tested between 2013-2017 (Suter et al., 2018).
+
+##The Data
+
+Movement Data: 
+
+The movement data was collected by using GPS transponders on a collar that were put on wild boar captured by tranquilizer gun or wildlife traps. In all of the study areas, 36 wild boar were equipped with tracking device and location data was gathered between 2014 and 2017 (Suter et al. 2018). 
+
+Deterrence Device Data: 
+
+In addition to the raw movement data spatio-temporal informateion of the devices were needed for this analyis. This consists of a list with all the locations and further information about the device setup (e.g installation height) and about the fields they were placed in (e.g. crop type, place name etc). Another list contains the time intervals these devices were active and detailed information about the chosen device settings, such as volume, direction and interval. The list with the time intervalls is longer than the location list (69 to 57) because at some locations the device was activated multiple times. By joining these two table we received a single table containing all the instances this device was activated with both the location and time data, which is the minimum needed for this analysis to work. 
+
+
+##Material and Methods
+
+Packages used:
+
+Prominently used in this project are the dplyr, lubridate, sf, sp, tmap, and ggplot packages.
 
 ```{r}
-library(ComputationalMovementAnalysisData)
+library(devtools)
+library(terra)
 library(ggplot2)
-
-# Include tables with the function "kable"
-
-knitr::kable(head(wildschwein_BE))
+library(tmap)
+library(sp)
+library(readr)
+library(shiny)
+library(lubridate)
+library(dplyr)
+library(tibble)
+library(sf)
+library(ComputationalMovementAnalysisData)
 ```
 
-<!-- the following is just a placeholder text, remove it!-->
-Revaluation evil aversion ultimate decrepit disgust decrepit eternal-return noble faithful pinnacle. Truth ascetic inexpedient decrepit free. Ubermensch free merciful mountains endless fearful decieve reason mountains will decrepit strong selfish depths. Overcome faith snare gains oneself transvaluation.
+#Datasets used:
+
+For this analysis we used the datasets provided by our course tutors. Naturally, we needed all the boar location data of the survey area which could conveniently be loaded into the R-scripts with the provided "ComputationalMovementAnalysis"-package. Similarly, the wss_locations and the agenda were loaded into our inital data processing and filtering script.
 
 ```{r}
-# include plots automatically
+head(schreck_agenda)
+head(schreck_locations)
+head(wildschwein_BE)
+```
 
-ggplot(schreck_locations, aes(E, N)) +
-  geom_point() +
-  coord_map()
+#Pre-Processing:
+
+The Wildschweinschreck locations first needed to be reprojected as they initally were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. The Wildschweinschreck serves to protect crops so it is sensible to filter it this way.
+
+```{r}
+
+#Step 1: Preprocessing the Wildschweinschreck location data
+
+locations_sf <- st_as_sf(schreck_locations, coords = c('lon', 'lat'), crs = 4326)
+
+#Reprojecting to LV95 metric coordinates
+lv95_coords <- locations_sf%>%
+  st_transform(crs = 2056)%>%
+  mutate(E = st_coordinates(.)[,1],
+         N = st_coordinates(.)[,2])
+
+#Joining agenda and locations and filtering by date
+joined_tables_device_locs <- left_join(lv95_coords, schreck_agenda , by = c("id" = "id"))%>%
+  mutate(datum_on = as_datetime(paste(as.character(datum_on), " 00:01:00")),
+        datum_off = as_datetime(paste(as.character(datum_off), " 00:01:00")))%>%
+  filter(as.integer(month(datum_on)) >= 5  &  as.integer(month(datum_on)) <= 9)
+
+joined_tables_device_locs <- st_set_geometry(joined_tables_device_locs, NULL)
 
 ```
 
+The boar location data set contains more than 300'000 entries or location fixes in its raw form and not all of them are of use for this analysis. Here we also applied a filter to remove all the day time fixes, as boars typically feed in the cover of the night and the Wildschweinschreck devices were also only active after dark. Secondly, the fixes between November and March were excluded, this was done for the same reason as for the WSS location data, a longer time frame was included however, so that there were definitely enough fixes to compare the before and after state with the active state for all the device locations. This filtering left us with still more than 100'000 fixes to work with. For the remaining data velocity was calculated for each location, this gives us another movement variable to work with other than point density.
+
+```{r}
+#PRELIMINARY CODE: Step 2: Preprocessing boar location data
+boar_locs_filtered <- wildschwein_BE%>% 
+  filter(hour(DatetimeUTC) <= 6  |  hour(DatetimeUTC) >= 20)%>%
+  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)
+
+#Saving them in a .csv for convenience
+write.csv(joined_tables_device_locs, file = "data/device_locations_filtered.csv")
+write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
+
+``` 
+
+#Processing:
+
+As the data was now ready, the algorithm for our analysis could be implemented. We first planned to use geometric operations with spatial features, but as our calculations are mostly based around distance measures, we were able to get by with simple pythagorean math. As a first step, a distance calculation function was defined to make the following code a bit more tidy. Then, the desired range parameters in metres are defined. 
+
+```{r}
+
+#Defining functions
+wss_distance <- function(x1, y1, x2, y2){
+  sqrt((x1-x2)^2+(y1-y2)^2)
+} 
+
+  
+#Defining distance parameters in metres, loading data
+r1 = 50
+r2 = 100
+r3 = 500
+
+#Reading in pre-processed data
+wss_data <- read_delim("data/device_locations_filtered.csv", delim = ",")
+boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
+```
+
+The Algorithm:
+
+What sounds intimidating at first is in fact quite simple. Before the calculation begins, the areas of the range classes are calculated, again using simple geometric area functions. Three circles are calculated according to the range class input, then the area of the second biggest circle gets subtracted by the area of the biggest circle and-so-forth. In the end we receive the area in hectares of the donut-shaped range classes around each device. This will be handy for later statistics. For the results of our algorithm, some empty columns are created; The n- prefix stands for absolute amount and the rho- prefix representing relative density, these will be filled up later on.
+
+```{r}
+#PRELIMINARY CODE: PLEASE UPDATE BEFORE FINALISING REPORT
+#Running the algorithm for switched on wildschweinschreck
+
+#area sizes of range classes in ha
+area_r1 <- round(((r1^2*pi) / 10000), 3)
+area_r2 <- round((((r2^2*pi) - area_r1) / 10000), 3)
+area_r3 <- round((((r3^2*pi) - (r2^2*pi)) / 10000), 3)
+
+#add columns for the results of the calculations
+wss_data <- wss_data %>%
+  add_column(r1 = r1,
+             r2 = r2,
+             r3 = r3,
+             a_r1 = area_r1,
+             a_r2 = area_r2,
+             a_r3 = area_r3,
+             n_r1_on = 0,
+             n_r2_on = 0,
+             n_r3_on = 0,
+             rho_r1_on = 0,
+             rho_r2_on = 0,
+             rho_r3_on = 0)
+```
+
+The core range-class algorithm consists of a single loop that iterates through the WSS location table rows. Based on the information (location, time of activation/shutdown) contained in each row about the corresponding location, the large boar location dataset is manipulated. For each iteration, the data is filtered for the time interval during which the device was running, then the euclidian distance of these fixes to the respective device location is calculated and written into the boar location table. 
+
+Based on the distances, the boar location dataset can be subsetted based on the distance ranges provided in the beginning. The number of fixes in each range class is counted and written into the corresponding data field of the Wildschweinschreck table. With the area of each range class it is also possible to calculate the density of the fixes. This is then devided by the number of days the device was active so the densities are more  comparable with each other since every device on the schedule runs for a different amount of time. The data in the relative rho- fields thus is in the unit of fixes per hectar and day.
+
+```{r}
+  for (i in 1:nrow(wss_data)){
+    E_wss <- wss_data$E[i]
+    N_wss <- wss_data$N[i]
+    wss_start <- wss_data$datum_on[i]
+    wss_end <- wss_data$datum_off[i]
+    n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
+  
+    boar_data_filtered <- boar_data%>%
+      filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
+      mutate(dist = wss_distance(E_wss, N_wss, E, N))
+    
+    #aggregating fixes based on distance to device
+    fixes_r1 <- boar_data_filtered%>%
+      filter(dist <= r1)
+    fixes_r2 <- boar_data_filtered%>%
+      filter(dist > r1 & dist <= r2)
+    fixes_r3 <- boar_data_filtered%>%
+      filter(dist > r2 & dist <= r3)
+  
+    #number of fixes in each range class and specified time interval
+    wss_data$n_r1_on[i] <- nrow(fixes_r1)
+    wss_data$n_r2_on[i] <- nrow(fixes_r2)
+    wss_data$n_r3_on[i] <- nrow(fixes_r3)
+  
+    #boar density per hectare and day, to make relative numbers comparable
+    wss_data$rho_r1_on[i] <- round((wss_data$n_r1_on[i]/area_r1)/n_days, 2)
+    wss_data$rho_r2_on[i] <- round((wss_data$n_r2_on[i]/area_r2)/n_days, 2)
+    wss_data$rho_r3_on[i] <- round((wss_data$n_r3_on[i]/area_r3)/n_days, 2)
+    }
+
+```
+
+Despite the seemingly vast amount of location data, many boars seemed not to have been in the right place at the right time, as most range classes did not contain any fixes at all. These are of no use to our analysis and need to be discarded. This leaves only eight out of the initial 61 WSS locations to work with. 
+
+```{r}
+
+#filtering data entries with no boar locations in r1, r2 and r3
+wss_data <- wss_data%>%
+  filter(n_r1_on != 0 & n_r2_on != 0 & n_r3_on != 0)
+
+head(wss_data)
+```
+
+Now we need a "control group" to compare against that reflects the boar movement without the effects of a deterrence device. For this we used a timeframe of the same length as the active state of each device (datum_off - datum_on) but immediately before device activation. The temporal closeness was chosen to keep as many factors as possible constant, such the as the season, presence of the same individuals and a similar food supply. Of course there are some insecurities because of this and other factors that might influence boar behavior.
+
+Some more columns were created for the data to be written in and some temporal parameters were changed. Apart from the that, the same loop was run another time and also provided the same stats for this time frame. 
 
 
+```{r}
+#Running the algorithm for time before switched on
+
+wss_data <- wss_data %>%
+  add_column(n_r1_bon = 0, # -bon suffix stands for "before on"
+             n_r2_bon = 0,
+             n_r3_bon = 0,
+             rho_r1_bon = 0,
+             rho_r2_bon = 0,
+             rho_r3_bon = 0)
 
 
-## Material and Methods
+for (i in 1:nrow(wss_data)){
+  E_wss <- wss_data$E[i]
+  N_wss <- wss_data$N[i]
+  wss_start <- wss_data$datum_on[i] - as.numeric(wss_data$datum_off[i] - wss_data$datum_on[i])*86400 #using the same time interval for before as during       device activation
+  wss_end <- wss_data$datum_on[i]
+  n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
+  
+  boar_data_filtered <- boar_data%>%
+    filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
+    mutate(dist = wss_distance(E_wss, N_wss, E, N))
+  
+  fixes_r1 <- boar_data_filtered%>%
+    filter(dist <= r1)
+  fixes_r2 <- boar_data_filtered%>%
+    filter(dist > r1 & dist <= r2)
+  fixes_r3 <- boar_data_filtered%>%
+    filter(dist > r2 & dist <= r3)
+  
+  #number of fixes in each range class and specified time interval
+  wss_data$n_r1_bon[i] <- nrow(fixes_r1)
+  wss_data$n_r2_bon[i] <- nrow(fixes_r2)
+  wss_data$n_r3_bon[i] <- nrow(fixes_r3)
+  
+  #boar density per hectare and day
+  wss_data$rho_r1_bon[i] <- round((wss_data$n_r1_bon[i]/area_r1)/n_days, 2)
+  wss_data$rho_r2_bon[i] <- round((wss_data$n_r2_bon[i]/area_r2)/n_days, 2)
+  wss_data$rho_r3_bon[i] <- round((wss_data$n_r3_bon[i]/area_r3)/n_days, 2)
+}
 
-<!-- the following is just a placeholder text, remove it!-->
-Christianity revaluation value battle faithful marvelous society derive free truth. Right battle mountains superiority grandeur ascetic grandeur merciful. Derive against intentions burying salvation ocean. Right intentions dead victorious ideal spirit evil ultimate joy. Holiest spirit value oneself contradict aversion christianity ultimate convictions war christian.
+#Saving to csv for convenience
+write.csv(wss_data, file = "data/range_class_data.csv")
 
+```
 ## Results
 
 <!-- the following is just a placeholder text, remove it!-->
@@ -74,5 +281,6 @@ Philosophy oneself passion play fearful self noble zarathustra deceptions sexual
 ## Discussion
 
 <!-- the following is just a placeholder text, remove it!-->
-Justice convictions spirit sexuality insofar free marvelous joy. Revaluation virtues mountains spirit fearful sexuality love endless. Society intentions will noble burying aversion moral. Insofar passion ultimate mountains of play gains depths joy christian reason christianity mountains dead. Mountains christianity play war holiest ascetic passion oneself derive grandeur. Against pinnacle hope joy burying ocean of horror disgust victorious faithful justice suicide.
+
+## Bibliography
 

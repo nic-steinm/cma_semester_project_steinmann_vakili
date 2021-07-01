@@ -4,8 +4,12 @@ library(tibble)
 library(sf)
 library(ComputationalMovementAnalysisData)
 library(readr)        
+<<<<<<< HEAD
 library(ggplot2)  
 library(lattice)
+=======
+library(ggplot2)      
+>>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
 
 #Step 1: Reprojecting, Filtering and joining of deterrence device locations
 head(schreck_agenda)
@@ -31,34 +35,40 @@ head(wildschwein_BE)
 
 boar_locs_filtered <- wildschwein_BE%>% 
   filter(hour(DatetimeUTC) <= 6  |  hour(DatetimeUTC) >= 20)%>% #Corrected AND/OR statements: | = OR, & = AND, also used >= instead of > to include the month specified
-  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)#%>% #Changed thresholds so we get also data before and after the wildschweinschreck installation
-#filter(TierName=="Ueli") #I would suggest using all individuals as this gives us more data to work with
-
+  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)%>%
+  group_by(TierName)%>%
+  mutate(timelag = as.integer(difftime(lead(DatetimeUTC), DatetimeUTC, units = "secs")),
+         steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2),
+         speed = as.numeric(round(steplength/timelag, 2)))
 
 write.csv(joined_tables_device_locs, file = "data/device_locations_filtered.csv")
 write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
 
-# Speed
-boar_locs_filtered <- group_by(boar_locs_filtered,TierID)
-boar_locs_filtered$timelag  <- as.integer(difftime(lead(boar_locs_filtered$DatetimeUTC), boar_locs_filtered$DatetimeUTC, units = "sec"))
-boar_locs_filtered$steplength <- as.numeric(sqrt((boar_locs_filtered$E - lead(boar_locs_filtered$E,1))^2 + (boar_locs_filtered$N - lead(boar_locs_filtered$N,1))^2))
-boar_locs_filtered$speed <- as.numeric(boar_locs_filtered$steplength/boar_locs_filtered$timelag)
-boar_locs_filtered <-  boar_locs_filtered %>%
-  group_by(TierName) %>%
-  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
-boar_locs_filtered <- boar_locs_filtered %>% 
-  group_by(TierName) %>%
-  mutate(speed = steplength/timelag)
+
     
 # ggPlot
 ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
   geom_line()
 
 ggplot(boar_locs_filtered, aes(timelag)) +
+=======
+
+
+# Statistical Analysis
+ggplot(boar_locs_filtered, aes(DatetimeUTC,TierName), color = ) +
+  geom_line()
+
+
+ggplot(boar_locs_filtered, aes(timelag)) + #I don't know what that is supposed to tell
+>>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
   geom_histogram(binwidth = 50) +
   lims(x = c(0,15000)) +
   scale_y_log10()
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
 boar_locs_filtered %>%
   filter(year(DatetimeUTC)  == 2014) %>%
   ggplot(aes(DatetimeUTC,timelag, colour = TierID)) +
@@ -77,6 +87,7 @@ boar_locs_filtered %>%
   geom_line() +
   geom_point()
 
+<<<<<<< HEAD
 ggplot(boar_locs_filtered, aes(speed)) +
   geom_histogram(binwidth = 1) +
   geom_vline(xintercept = mean(boar_locs_filtered$speed,na.rm = TRUE))
@@ -125,3 +136,5 @@ ggplot(boar_locs_filtered, aes(x = TierName, y = speed)) +
 # Will they stop moving through the area or will they only stop rummaging? 
 
 
+=======
+>>>>>>> ad59ff121371a615e101c547cc1b431aff1faa07
