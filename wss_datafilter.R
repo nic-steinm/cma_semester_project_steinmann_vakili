@@ -46,7 +46,7 @@ ggplot(boar_locs_filtered, aes(DatetimeUTC,TierName), color = ) +
   geom_line()
 
 
-ggplot(boar_locs_filtered, aes(timelag)) + #I don't know what that is supposed to tell
+ggplot(boar_locs_filtered, aes(speed)) + #I don't know what that is supposed to tell
   geom_histogram(binwidth = 50) +
   lims(x = c(0,15000)) +
   scale_y_log10()
