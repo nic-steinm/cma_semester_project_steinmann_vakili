@@ -14,7 +14,7 @@ boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
 
 wss_data <- wss_data%>%
   mutate(id = paste(as.character(X1), ":", " ", flurname, sep = ""))
-  
+
 #functions
 hex_grids <- function(geom, extent, cell_size){
   
@@ -38,20 +38,43 @@ hex_grids <- function(geom, extent, cell_size){
   return(hex_grid_geom)
 }
 
+
+
+
+
+#Choose your values
+wss_data
+
+#Select the device by number
+device_number <- 7
+
+#Select cell size in metres (be advised: cell size < 100 takes some time to calculate, < 50 not recommended)
+cell_size <- 100
+
+
+
+
+
+
 #converting to geometry
 wss_geom <- wss_data%>%
   st_as_sf(coords = c("E", "N"), crs = 2056)%>%
-  filter(X1 == 4)
+  filter(X1 == device_number)
 
-#Setting parameters
-cell_size <- 100 #cell size in meters for the grid binning
-wss_buffer1 <- st_buffer(wss_geom, dist = 50)
-wss_buffer2 <- st_buffer(wss_geom, dist = 150)
-wss_buffer3 <- st_buffer(wss_geom, dist = 300)
+rad1 = wss_geom$r1
+rad2 = wss_geom$r2
+rad3 = wss_geom$r3
 
-donut_2 <- st_difference(wss_buffer2, wss_buffer1)
-donut_3 <- st_difference(wss_buffer3, wss_buffer2)
+#Setting Buffers
+rad1 = wss_geom$r1
+rad2 = wss_geom$r2
+rad3 = wss_geom$r3
 
+wss_buffer1 <- st_buffer(wss_geom, dist = rad1)
+wss_buffer2 <- st_buffer(wss_geom, dist = rad2)
+wss_buffer3 <- st_buffer(wss_geom, dist = rad3)
+
+#calculating difftime
 start_date <- wss_geom$datum_on
 end_date <- wss_geom$datum_off
 n_seconds <- as.numeric(difftime(end_date, start_date, units = "secs"))
@@ -90,24 +113,44 @@ tmap_style("cobalt")
 
 tm_shape(grid_boars_join)+
   tm_fill(col = "diff_on_bon",
-              palette = brewer.pal(5, "RdYlGn"),
-              style = "jenks",
+              palette = brewer.pal(4, "RdBu"),
+              style = "cont",
               midpoint = 0,          
-              alpha = 0.5,
-              id = "diff_on_bon")+
+              alpha = 0.7,
+              id = "diff_on_bon"
+              )+
 tm_shape(wss_buffer1)+
   tm_borders(col = "grey",
-          alpha = 0.5)+
-  tm_text("rho_r1_on", ymod = 0.1, col = "white")+
-tm_shape(donut_2)+
+          alpha = 0.7)+
+tm_shape(wss_buffer2)+
   tm_borders(col = "grey", 
-          alpha = 0.5)+
-  tm_text("rho_r2_on", ymod = 0.5, col = "white")+
-tm_shape(donut_3)+
+          alpha = 0.7)+
+tm_shape(wss_buffer3)+
   tm_borders(col = "grey",
-          alpha = 0.5)+
-  tm_text("rho_r3_on", ymod = 1, col = "white")+
+          alpha = 0.7)+
 tm_shape(wss_geom)+
-  tm_dots(col = "red")
+  tm_dots(col = "red",
+          id = "id",
+          popup.vars = c(
+            "Region:" = "region",
+            "Crop:" = "kultur",
+            "Activation:" = "datum_on",
+            "Deactivation:" = "datum_off",
+            "Radius r1:" = "r1",
+            "Radius r2:" = "r2",
+            "Radius r3:" = "r3",
+            "Density r1 before active:" = "rho_r1_bon",
+            "Density r1 while active:" = "rho_r1_on",
+            "Density r2 before active:" = "rho_r2_bon",
+            "Density r2 while active:" = "rho_r2_on",
+            "Density r3 before active:" = "rho_r3_bon",
+            "Density r3 while active:" = "rho_r3_on",
+            "Mean step length r1 before active:" = "meansl_r1_bon",
+            "Mean step length r1 while active:" = "meansl_r1_on",
+            "Mean step length r2 before active:" = "meansl_r2_bon",
+            "Mean step length r2 while active:" = "meansl_r2_on",
+            "Mean step length r3 before active:" = "meansl_r3_bon",
+            "Mean step length r3 while active:" = "meansl_r3_on"
+          ))
   
   
