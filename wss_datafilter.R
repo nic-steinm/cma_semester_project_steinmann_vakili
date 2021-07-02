@@ -24,7 +24,7 @@ joined_tables_device_locs <- left_join(lv95_coords, schreck_agenda , by = c("id"
 
 joined_tables_device_locs <- st_set_geometry(joined_tables_device_locs, NULL)
 
-#Step 2: Filter the boar location data
+#Step 2: Filter the boar location data and calculate speed and steplength
 head(wildschwein_BE)
 
 boar_locs_filtered <- wildschwein_BE%>% 
