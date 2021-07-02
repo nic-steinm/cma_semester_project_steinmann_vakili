@@ -39,6 +39,11 @@ Location data of boars living in the area was collected in order to assess the e
 
 There are various measures that can be taken to prevent damage to agriculture from wild boar. Most arable farmers keep wild boars out of the field with an electric fence. The fence should be strung with three wires at a height of 20, 40 and 60 centimeters above the ground. This is effective because it prevents the wild boar from hatching or jumping below or above the fence. The use of chemical and biological agents also keeps the wild boar at bay. One example of this is Hukinol.The use of mineral and lime fertilizers, which contain elemental sulfur, also serve as preventive measures.
 
+For our project, there are three research questions. These three research questions are:
+1. How does the movement of the boars change in close and far range of the device? Compare different movement parameters (density, speed, behavior pattern) between device present/not present. 
+2. At what ranges the device effects the movement patterns and behavior? 
+3. Will they stop moving through the area or will they only stop rummaging? 
+
 ## Study Area
 The study area of this data analyisis lies in the "Drei-Seen-Land" in the western part of Switzerland between Lake Biel and Lake Neuchatel, just north of Lake Murten. It consists of small villages surrounded by agricultural fields, forests and wetlands and goes by the place name "Fanel". As part of a research project conducted by the Zurich University of Applied Science (ZHAW) it was one of five areas chosen to demonstrate and research the effects of a newly developed acoustic "Wildschweinschreck" deterrence device against wild boars. It was chosen because it is a suitable habitat for wild boar and, because of its proximity to agricultural fields, an area with a high incidence of wild boar damages to crops. On 46 fields, the Wildschweinschreck was installed and tested between 2013-2017 (Suter et al., 2018).
 
