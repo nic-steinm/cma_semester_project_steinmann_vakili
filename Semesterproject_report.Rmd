@@ -300,6 +300,7 @@ head(wss_data)
 
 
 ## Overview
+In a first step, an overview of the data is given. This should help make the data understandable.
 ```{r}
 ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
   geom_line()
@@ -317,6 +318,10 @@ joined_tables_device_locs%>%
   geom_point() +
   coord_fixed() +
   theme(legend.position = "bottom")
+
+ggplot(boar_locs_filtered, aes(x =moonilumination , y = speed)) +
+  geom_point(mapping=aes(x= moonilumination , y = speed, color= TierName)) +
+  stat_smooth(method = "lm")
 ```
 
 
@@ -578,7 +583,7 @@ tm_shape(wss_geom)+
 <!-- the following is just a placeholder text, remove it!-->
 Wild boars use agricultural land the most for foraging. Potato fields were preferred by wild boars from mid-May to early June. The peaks of wild boar visits in wheat are from mid-May to late June and in maize from mid-July to mid-August. 
 The growth of the wild boar population is promoted by the large food supply and free access to the agricultural areas.
-This agrees well with the months of data filtering.However, there are fields in which the wild boars ignored the wild boar fright and could not be driven away, despite acoustic deterrence. There are therefore outliers in the method of action.
+This agrees well with the months of data filtering.However, there are fields in which the wild boars ignored the wild boar fright and could not be driven away, despite acoustic deterrence. There are therefore outliers in the method of action.Not all factors that are necessary for analysis have been taken into account. For example, the weather also plays a role. It is also not clear whether the harvests were the same every year. It would also be good if this analysis was carried out at several locations in order to get more meaningful results, since more wild boars were tested in relation to a shock.
 
 
 ## Bibliography
