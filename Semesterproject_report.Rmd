@@ -1,13 +1,10 @@
 ---
 title: Assessing the effectiveness of the "Wildschweinschreck" boar deterrence device at different distances.  
-subtitle: A subtle subtitle
+subtitle: Using Computational Movement Analysis to protect crops and keep boars alive.
 author: Nicolas Steinmann and Marjan Vakili
 output: html_document
 
 ---
-
-
-<!-- You can add  your R Code with Code chunks-->
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 
@@ -28,28 +25,33 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ## Abstract
 
 <!-- the following is just a placeholder text, remove it!-->
-Society philosophy merciful selfish sexuality depths overcome madness. Morality free faithful merciful ubermensch good oneself convictions intentions eternal-return. Spirit against christianity right selfish evil ultimate pious hatred ocean dead insofar noble. Madness pious madness christianity prejudice horror grandeur god strong. Ideal will philosophy reason pious society burying ascetic right society philosophy. Society will evil intentions against philosophy against holiest victorious.
 
 
 ## Introduction
 
 Wild boar species spread across Eurasia and Africa and have also been introduced to the Americas. In many of these places, wild boars are considered pests as they cause great damage to crop fields. With too few natural predators left and humans struggling to control their numbers by the means of hunting, population has drastically increased in the past decades which also lead to increased crop damage (CITATION NEEDED). To prevent wild boars from causing damage, several methods have been tried: Shooting the animals is labour intensive and is only allowed at certain times of the year. Putting up electric fences works fine, but requires regular upkeep as boars are often smart enough to surpass them (Suter et. al, 2018). Researchers at ZHAW have thus come up with another method that works acoustically with loud sound emission that are supposed to scare the animals away from agricultural fields. This is called the "Wildschweinschreck" (meaning wild-boar-scarer). This system requires minimal maintenance and labour cost as it turns on automatically at night, only requiring occassional battery changes.  The wild boar population has increased both in Switzerland and in large parts of Europe over the past few decades. The reason is the large food supply and the mild climate together with the combination of the extraordinarily high reproductive capacity. Wild boar cause great damage in agriculture. In particular, agricultural areas that are in the area of influence of protected areas are particularly affected by wild boar damage.
 
-Location data of boars living in the area was collected in order to assess the effectiveness of this device, to find out if boars sustainably avoid the area during and after the device is activated. Determining these effects using Computational Movement Analyis is the subject of this semester project, using spatio-temporal analysis analysis techniques and algorithms we want to find out at which distances to the device the "Wildschweinschreck" remains effective. This is intended to be done by calculating different location and movement parameters aggregated in different range classes (eg. 0-50m, 50-100m ...) around the device when it is active and compare it to a state (eg. before, during, after) were the device is shut off. The density and velocity of the boars within those range classes will act as the indicator whether the deterrence device has a lasting effect on the animals movement patterns. To illustrate this method, we deviced a conceptual model that should make the process very clear (IMAGE REFERENCE). The range classes are spatial entities arranged in concentrical circles around the device location. Important to remember is that these circles do not intersect as that would include certain locations multiple times. Apart from the innermost circle, all the circles are donut-shaped with the smaller donut fitting snugly into the hole of the larger donut and so forth. This gives us the area in a predefined field.
+Location data of boars living in the area was collected in order to assess the effectiveness of this device, to find out if boars sustainably avoid the area during and after the device is activated. Determining these effects using Computational Movement Analyis is the subject of this semester project, using spatio-temporal analysis analysis techniques and algorithms we want to find out at which distances to the device the "Wildschweinschreck" remains effective. This is intended to be done by calculating different location and movement parameters aggregated in different range classes (eg. 0-50m, 50-100m ...) around the device when it is active and compare it to a state (eg. before, during, after) were the device is shut off. The density and velocity of the boars within those range classes will act as the indicator whether the deterrence device has a lasting effect on the animals movement patterns. To illustrate this method, we devised a conceptual model that should make the process very clear (IMAGE REFERENCE). The range classes are spatial entities arranged in concentrical circles around the device location. Important to remember is that these circles do not intersect as that would include certain locations multiple times. Apart from the innermost circle, all the circles are donut-shaped with the smaller donut fitting snugly into the hole of the larger donut and so forth. This gives us the area in a predefined field.
+
+```{r pressure, echo=FALSE, fig.cap="Image 1: The conceptual model used for this analysis.", out.width = '100%'}
+knitr::include_graphics("images/Konzeptgraphik.png")
+```
+
+
 
 There are various measures that can be taken to prevent damage to agriculture from wild boar. Most arable farmers keep wild boars out of the field with an electric fence. The fence should be strung with three wires at a height of 20, 40 and 60 centimeters above the ground. This is effective because it prevents the wild boar from hatching or jumping below or above the fence. The use of chemical and biological agents also keeps the wild boar at bay. One example of this is Hukinol.The use of mineral and lime fertilizers, which contain elemental sulfur, also serve as preventive measures (agrarheute 2018 & BLW 2018).
 
-In the final report of the ZHAW, electric fences and scare killings are mentioned as two classic prevention methods.
+In the final report of the ZHAW, electric fences and scare killings are mentioned as two classic prevention methods.Noise protection is one of the measures to deter wild boars. However, this prevention method has a conflict with local residents who live nearby. The residents could be bothered by the noise.
 
 For our project, there are three research questions. These three research questions are:
 1. How does the movement of the boars change in close and far range of the device? Compare different movement parameters (density, speed, behavior pattern) between device present/not present. 
 2. At what ranges the device effects the movement patterns and behavior? 
 3. Will they stop moving through the area or will they only stop rummaging? 
 
-## Study Area
+#Study Area
 The study area of this data analyisis lies in the "Drei-Seen-Land" in the western part of Switzerland between Lake Biel and Lake Neuchatel, just north of Lake Murten. It consists of small villages surrounded by agricultural fields, forests and wetlands and goes by the place name "Fanel". As part of a research project conducted by the Zurich University of Applied Science (ZHAW) it was one of five areas chosen to demonstrate and research the effects of a newly developed acoustic "Wildschweinschreck" deterrence device against wild boars. It was chosen because it is a suitable habitat for wild boar and, because of its proximity to agricultural fields, an area with a high incidence of wild boar damages to crops. On 46 fields, the Wildschweinschreck was installed and tested between 2013-2017 (Suter et al., 2018).
 
-##The Data
+#The Data
 
 Movement Data: 
 
@@ -95,7 +97,7 @@ head(wildschwein_BE)
 
 #Pre-Processing:
 
-The Wildschweinschreck locations first needed to be reprojected as they initally were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. The Wildschweinschreck serves to protect crops so it is sensible to filter it this way.
+The Wildschweinschreck locations first needed to be reprojected as they initally were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. As the Wildschweinschreck serves to protect crops so it is sensible to filter it this way.
 
 ```{r}
 
@@ -119,23 +121,23 @@ joined_tables_device_locs <- st_set_geometry(joined_tables_device_locs, NULL)
 
 ```
 
-The boar location data set contains more than 300'000 entries or location fixes in its raw form and not all of them are of use for this analysis. Here we also applied a filter to remove all the day time fixes, as boars typically feed in the cover of the night and the Wildschweinschreck devices were also only active after dark. Secondly, the fixes between November and March were excluded, this was done for the same reason as for the WSS location data, a longer time frame was included however, so that there were definitely enough fixes to compare the before and after state with the active state for all the device locations. This filtering left us with still more than 100'000 fixes to work with. For the remaining data velocity was calculated for each location, this gives us another movement variable to work with other than point density.
+The boar location data set contains more than 300'000 entries or location fixes in its raw form and not all of them are of use for this analysis. Here we also applied a filter to remove all the day time fixes, as boars typically feed in the cover of the night and the Wildschweinschreck devices were also only active after dark. Secondly, the fixes between November and March were excluded, this was done for the same reason as for the WSS location data, a longer time frame was included however, so that there were definitely enough fixes to compare the before and after state with the active state for all the device locations. This filtering left us with still more than 100'000 fixes to work with. For the remaining data velocity and steplength was calculated for each location, this gives us another movement variable to work with other than point density.
 
 ```{r}
-#PRELIMINARY CODE: Step 2: Preprocessing boar location data
+#Step 2: Filter the boar location data and calculate speed and steplength
 boar_locs_filtered <- wildschwein_BE%>% 
-  filter(hour(DatetimeUTC) <= 6  |  hour(DatetimeUTC) >= 20)%>%
-  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)
-
-#Saving them in a .csv for convenience
-write.csv(joined_tables_device_locs, file = "data/device_locations_filtered.csv")
-write.csv(boar_locs_filtered, file = "data/boar_locations_filtered.csv")
+  filter(hour(DatetimeUTC) <= 6  |  hour(DatetimeUTC) >= 20)%>% 
+  filter(month(DatetimeUTC) >= 4 & month(DatetimeUTC) <= 10)%>%
+  group_by(TierName)%>%
+  mutate(timelag = as.integer(difftime(lead(DatetimeUTC), DatetimeUTC, units = "secs")),
+         steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2),
+         speed = as.numeric(round(steplength/timelag, 2)))
 
 ``` 
 
 #Processing:
 
-As the data was now ready, the algorithm for our analysis could be implemented. We first planned to use geometric operations with spatial features, but as our calculations are mostly based around distance measures, we were able to get by with simple pythagorean math. As a first step, a distance calculation function was defined to make the following code a bit more tidy. Then, the desired range parameters in metres are defined. 
+As the data was now ready, the algorithm for our analysis could be implemented. We first planned to use geometric operations with spatial features, but as our calculations are mostly based around distance measures, we were able to get by with simple pythagorean math. As a first step, a distance calculation function was defined to make the following code a bit more tidy. Then, the desired range parameters in metres are defined. It is not trivial to choose appropriate range classes. To not just define them arbitrarily, we used numbers from the ZHAW report. At 50 meters the device exceeded the 55dB legal threshold 100% of the time, at 500 meters this sinks to 20% and at 1500 meters the device is not audible anymore (Suter et al. 2018). We expect that that the density and step length of boar would not significantly change in the outermost class but the differences should become more significant the closer we move to the device. It should be noted that these measures are based on human hearing and do quite possibly differ in boars. As we did not find similar information on swine sensory perception, this is the best we could do. How the amount and size of range classes change the outcome of such a study would also be interesting to find out but goes beyond the scope of our study unfortunately. However, by changing the parameters in the following code block one can experiment with different distances and compare the outcome manually.
 
 ```{r}
 
@@ -145,23 +147,22 @@ wss_distance <- function(x1, y1, x2, y2){
 } 
 
   
-#Defining distance parameters in metres, loading data
+#Defining distance parameters in metres
 r1 = 50
-r2 = 100
-r3 = 500
+r2 = 500
+r3 = 1500
 
 #Reading in pre-processed data
-wss_data <- read_delim("data/device_locations_filtered.csv", delim = ",")
-boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
+wss_data <- joined_tables_device_locs
+boar_data <- boar_locs_filtered
+
 ```
 
 The Algorithm:
 
-What sounds intimidating at first is in fact quite simple. Before the calculation begins, the areas of the range classes are calculated, again using simple geometric area functions. Three circles are calculated according to the range class input, then the area of the second biggest circle gets subtracted by the area of the biggest circle and-so-forth. In the end we receive the area in hectares of the donut-shaped range classes around each device. This will be handy for later statistics. For the results of our algorithm, some empty columns are created; The n- prefix stands for absolute amount and the rho- prefix representing relative density, these will be filled up later on.
+What sounds complicated at first is in fact quite simple. Before the calculation begins, the areas of the range classes are calculated, again using simple geometric area functions. Three circles are calculated according to the range class input, then the area of the second biggest circle gets subtracted by the area of the biggest circle and-so-forth. In the end we receive the area in hectares of the donut-shaped range classes around each device. This will be handy for later statistics such as density measures. For the results of our algorithm, some empty columns are created; The n- prefix stands for absolute amount, rho- prefix representing relative density and the meansl- stands for mean steplength. These will be filled up later on.
 
 ```{r}
-#PRELIMINARY CODE: PLEASE UPDATE BEFORE FINALISING REPORT
-#Running the algorithm for switched on wildschweinschreck
 
 #area sizes of range classes in ha
 area_r1 <- round(((r1^2*pi) / 10000), 3)
@@ -181,43 +182,50 @@ wss_data <- wss_data %>%
              n_r3_on = 0,
              rho_r1_on = 0,
              rho_r2_on = 0,
-             rho_r3_on = 0)
+             rho_r3_on = 0,
+             meansl_r1_on = 0,
+             meansl_r2_on = 0,
+             meansl_r3_on = 0)
 ```
 
-The core range-class algorithm consists of a single loop that iterates through the WSS location table rows. Based on the information (location, time of activation/shutdown) contained in each row about the corresponding location, the large boar location dataset is manipulated. For each iteration, the data is filtered for the time interval during which the device was running, then the euclidian distance of these fixes to the respective device location is calculated and written into the boar location table. 
+The core range-class algorithm consists of a single loop that iterates through the WSS location table rows. Based on the information (location coordinates, time of activation/shutdown) contained in each row about the corresponding location, the large boar location dataset is manipulated. For each iteration, the data is filtered for the time interval during which the device was running, then the euclidian distance of these fixes to the respective device location is calculated and written into the boar location table. 
 
-Based on the distances, the boar location dataset can be subsetted based on the distance ranges provided in the beginning. The number of fixes in each range class is counted and written into the corresponding data field of the Wildschweinschreck table. With the area of each range class it is also possible to calculate the density of the fixes. This is then devided by the number of days the device was active so the densities are more  comparable with each other since every device on the schedule runs for a different amount of time. The data in the relative rho- fields thus is in the unit of fixes per hectar and day.
+Based on these distances, the boar location dataset can be subsetted based on the distance ranges provided in the beginning. The number of fixes in each range class is counted and written into the corresponding data field of the Wildschweinschreck table. With the area of each range class it is also possible to calculate the density of the fixes. This is then divided by the number of days the device was active, so the densities are more  comparable with each other since every device on the schedule runs for a different amount of time. The data in the rho- fields thus is in the unit of fixes per hectare and day. The same is done with the steplength, though in this case the mean over all fixes is written into the respective column.
 
 ```{r}
-  for (i in 1:nrow(wss_data)){
-    E_wss <- wss_data$E[i]
-    N_wss <- wss_data$N[i]
-    wss_start <- wss_data$datum_on[i]
-    wss_end <- wss_data$datum_off[i]
-    n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
+for (i in 1:nrow(wss_data)){
+  E_wss <- wss_data$E[i]
+  N_wss <- wss_data$N[i]
+  wss_start <- wss_data$datum_on[i]
+  wss_end <- wss_data$datum_off[i]
+  n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
   
-    boar_data_filtered <- boar_data%>%
-      filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
-      mutate(dist = wss_distance(E_wss, N_wss, E, N))
-    
-    #aggregating fixes based on distance to device
-    fixes_r1 <- boar_data_filtered%>%
-      filter(dist <= r1)
-    fixes_r2 <- boar_data_filtered%>%
-      filter(dist > r1 & dist <= r2)
-    fixes_r3 <- boar_data_filtered%>%
-      filter(dist > r2 & dist <= r3)
+  boar_data_filtered <- boar_data%>%
+    filter(DatetimeUTC >= wss_start & DatetimeUTC <= wss_end)%>%
+    mutate(dist = wss_distance(E_wss, N_wss, E, N))
   
-    #number of fixes in each range class and specified time interval
-    wss_data$n_r1_on[i] <- nrow(fixes_r1)
-    wss_data$n_r2_on[i] <- nrow(fixes_r2)
-    wss_data$n_r3_on[i] <- nrow(fixes_r3)
+  fixes_r1 <- boar_data_filtered%>%
+    filter(dist <= r1)
+  fixes_r2 <- boar_data_filtered%>%
+    filter(dist > r1 & dist <= r2)
+  fixes_r3 <- boar_data_filtered%>%
+    filter(dist > r2 & dist <= r3)
   
-    #boar density per hectare and day, to make relative numbers comparable
-    wss_data$rho_r1_on[i] <- round((wss_data$n_r1_on[i]/area_r1)/n_days, 2)
-    wss_data$rho_r2_on[i] <- round((wss_data$n_r2_on[i]/area_r2)/n_days, 2)
-    wss_data$rho_r3_on[i] <- round((wss_data$n_r3_on[i]/area_r3)/n_days, 2)
-    }
+  #number of fixes in each range class and specified time interval
+  wss_data$n_r1_on[i] <- nrow(fixes_r1)
+  wss_data$n_r2_on[i] <- nrow(fixes_r2)
+  wss_data$n_r3_on[i] <- nrow(fixes_r3)
+  
+  #boar density per hectare and day, to make relative numbers comparable
+  wss_data$rho_r1_on[i] <- round((wss_data$n_r1_on[i]/area_r1)/n_days, 2)
+  wss_data$rho_r2_on[i] <- round((wss_data$n_r2_on[i]/area_r2)/n_days, 2)
+  wss_data$rho_r3_on[i] <- round((wss_data$n_r3_on[i]/area_r3)/n_days, 2)
+  
+  #Mean steplength
+  wss_data$meansl_r1_on[i] <- mean(fixes_r1$steplength)
+  wss_data$meansl_r2_on[i] <- mean(fixes_r2$steplength)
+  wss_data$meansl_r3_on[i] <- mean(fixes_r3$steplength)
+  }
 
 ```
 
@@ -232,27 +240,30 @@ wss_data <- wss_data%>%
 head(wss_data)
 ```
 
-Now we need a "control group" to compare against that reflects the boar movement without the effects of a deterrence device. For this we used a timeframe of the same length as the active state of each device (datum_off - datum_on) but immediately before device activation. The temporal closeness was chosen to keep as many factors as possible constant, such the as the season, presence of the same individuals and a similar food supply. Of course there are some insecurities because of this and other factors that might influence boar behavior.
+Now we need a "control group" to compare against, that represents the boar movement without the effects of a deterrence device. For this we used a timeframe of the same length as the active state of each device (datum_off - datum_on) but immediately before device activation. The temporal closeness was chosen to keep as many factors as possible constant, such the as the season, presence of the same individuals and a similar food supply. Of course there are some insecurities because of this and other factors that might influence boar behavior.
 
 Some more columns were created for the data to be written in and some temporal parameters were changed. Apart from the that, the same loop was run another time and also provided the same stats for this time frame. 
 
 
 ```{r}
-#Running the algorithm for time before switched on
 
+#Running the algorithm for time before switched on
 wss_data <- wss_data %>%
   add_column(n_r1_bon = 0, # -bon suffix stands for "before on"
              n_r2_bon = 0,
              n_r3_bon = 0,
              rho_r1_bon = 0,
              rho_r2_bon = 0,
-             rho_r3_bon = 0)
+             rho_r3_bon = 0,
+             meansl_r1_bon = 0,
+             meansl_r2_bon = 0,
+             meansl_r3_bon = 0)
 
 
 for (i in 1:nrow(wss_data)){
   E_wss <- wss_data$E[i]
   N_wss <- wss_data$N[i]
-  wss_start <- wss_data$datum_on[i] - as.numeric(wss_data$datum_off[i] - wss_data$datum_on[i])*86400 #using the same time interval for before as during       device activation
+  wss_start <- wss_data$datum_on[i] - as.numeric(wss_data$datum_off[i] - wss_data$datum_on[i])*86400 #using the same time interval for before as during device activation
   wss_end <- wss_data$datum_on[i]
   n_days <- as.numeric(difftime(wss_end, wss_start, units = "days"))
   
@@ -276,22 +287,48 @@ for (i in 1:nrow(wss_data)){
   wss_data$rho_r1_bon[i] <- round((wss_data$n_r1_bon[i]/area_r1)/n_days, 2)
   wss_data$rho_r2_bon[i] <- round((wss_data$n_r2_bon[i]/area_r2)/n_days, 2)
   wss_data$rho_r3_bon[i] <- round((wss_data$n_r3_bon[i]/area_r3)/n_days, 2)
+  
+  #Mean steplength
+  wss_data$meansl_r1_bon[i] <- mean(fixes_r1$steplength)
+  wss_data$meansl_r2_bon[i] <- mean(fixes_r2$steplength)
+  wss_data$meansl_r3_bon[i] <- mean(fixes_r3$steplength)
 }
 
-#Saving to csv for convenience
-write.csv(wss_data, file = "data/range_class_data.csv")
+head(wss_data)
 
 ```
+
+
+## Overview
+```{r}
+ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
+  geom_line()
+
+boar_locs_filtered%>%
+  ggplot(aes(E, N)) +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
+
+joined_tables_device_locs%>%
+  ggplot(aes(E, N, col="lautstaerke")) +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
+```
+
+
+
 ## Results
 
-BLABLA
+To compare and quantify our results we opted for a Student's t-test and visualisation with boxplots. Here we will not look at any single Wildschweinschreck device, but look at all of them together and compare the density of fixes and the mean step length between the range classes before and during the device is running. The t-test was chosen as it helps us be more sure if the differences we are seeing are significant and not just happening by chance, by taking the sample size and variance into account the t-test gives us more insight than a simple visual comparison using boxplots.
+
+The type of t-test used is a two-sided paired sample t-test. Paired sample t-test are used when the same subject under different conditions is compared to itself instead of two unrelated groups. As we are comparing the same range classes at the same locations to each other, with the only difference between them being the activation status of the Wildschweinschreck, this test seemed appropriate. The null hypothesis states that the means remain the same between the two groups.
 
 ```{r}
 
-wss_data <- read_delim("data/range_class_data.csv", delim = ",")
-            
-  
-  
 #Changing data table to long format
 wss_data_long <- wss_data%>%  
             pivot_longer(c('meansl_r1_on',
@@ -348,11 +385,12 @@ ggplot(bp)+
   ylab("Steplength [m]")+
   xlab("Activation status [on/before-on]")
 
+```
+
+When comparing the step length between before switching on the device and during its runtime, there is no significant difference in range classes r2 and r3. In range class r1 however, the p value is ever so slightly smaller than the significance level of 0.05 indicating a significant difference between the two means. One might think this will support our thesis that close proximity to the deterrence device leads to a longer steplength, but it was actually the opposite! Before device activation the steplength was actually higher then during activation.
 
 
-
-
-
+```{r}
 #T-tests rho [number of fixes per ha and day]
 
 #range class one
@@ -400,22 +438,10 @@ ggplot(bp)+
 ## Discussion
 
 ```{r}
-library(lubridate)
-library(dplyr)
-library(tibble)
-library(SpatialKDE)
-library(sp)
-library(sf)
-library(readr)
-library(tmap)
-library(shiny)
-library(RColorBrewer)
-
-wss_data <- read_delim("data/range_class_data.csv", delim = ",")
-boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
 
 wss_data <- wss_data%>%
-  mutate(id = paste(as.character(X1), ":", " ", flurname, sep = ""))
+  mutate(num = c(1:nrow(wss_data)),
+          id = paste(as.character(num), ":", " ", flurname, sep = ""))
 
 #functions
 hex_grids <- function(geom, extent, cell_size){
@@ -442,30 +468,21 @@ hex_grids <- function(geom, extent, cell_size){
 
 
 
-
-
 #Choose your values
 wss_data
 
 #Select the device by number
 device_number <- 7
 
-#Select cell size in metres (be advised: cell size < 100 takes some time to calculate, < 50 not recommended)
+#Select cell size in metres (CAUTION: cell size < 100 takes a long time to calculate, < 50 not recommended)
 cell_size <- 100
-
-
-
 
 
 
 #converting to geometry
 wss_geom <- wss_data%>%
   st_as_sf(coords = c("E", "N"), crs = 2056)%>%
-  filter(X1 == device_number)
-
-rad1 = wss_geom$r1
-rad2 = wss_geom$r2
-rad3 = wss_geom$r3
+  filter(num == device_number)
 
 #Setting Buffers
 rad1 = wss_geom$r1
@@ -506,8 +523,9 @@ grid_boars_join <- left_join(grid_boars_on, grid_boars_bon, by = c("id_hex" = "i
   mutate(diff_on_bon = n.on - n.bon)%>%
   filter(n.bon != 0 | n.on != 0)%>%
   select(id_hex, n.bon, n.on, diff_on_bon, geometry)
+```
 
-  
+```{r}
 
 #Setting up the visualisation
 tmap_mode("view")
@@ -534,7 +552,7 @@ tm_shape(wss_geom)+
   tm_dots(col = "red",
           id = "id",
           popup.vars = c(
-            "Region:" = "region",
+           "Region:" = "region",
             "Crop:" = "kultur",
             "Activation:" = "datum_on",
             "Deactivation:" = "datum_off",
@@ -557,6 +575,11 @@ tm_shape(wss_geom)+
   
 
 ```
+<!-- the following is just a placeholder text, remove it!-->
+Wild boars use agricultural land the most for foraging. Potato fields were preferred by wild boars from mid-May to early June. The peaks of wild boar visits in wheat are from mid-May to late June and in maize from mid-July to mid-August. 
+The growth of the wild boar population is promoted by the large food supply and free access to the agricultural areas.
+This agrees well with the months of data filtering.However, there are fields in which the wild boars ignored the wild boar fright and could not be driven away, despite acoustic deterrence. There are therefore outliers in the method of action.
+
 
 ## Bibliography
 agrargeute (2018):Praktiker-Tipps: So halten Sie Wildschweine auf Abstand.<https://www.agrarheute.com/tier/rind/praktiker-tipps-so-halten-wildschweine-abstand-534838>
