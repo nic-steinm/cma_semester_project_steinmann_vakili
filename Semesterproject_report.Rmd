@@ -280,6 +280,23 @@ for (i in 1:nrow(wss_data)){
 write.csv(wss_data, file = "data/range_class_data.csv")
 
 ```
+
+
+## Overview
+```{r}
+ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
+  geom_line()
+
+boar_locs_filtered%>%
+  ggplot(aes(E, N))  +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
+```
+
+
+
 ## Results
 
 <!-- the following is just a placeholder text, remove it!-->
