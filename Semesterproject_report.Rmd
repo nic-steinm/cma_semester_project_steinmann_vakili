@@ -39,7 +39,7 @@ Location data of boars living in the area was collected in order to assess the e
 
 There are various measures that can be taken to prevent damage to agriculture from wild boar. Most arable farmers keep wild boars out of the field with an electric fence. The fence should be strung with three wires at a height of 20, 40 and 60 centimeters above the ground. This is effective because it prevents the wild boar from hatching or jumping below or above the fence. The use of chemical and biological agents also keeps the wild boar at bay. One example of this is Hukinol.The use of mineral and lime fertilizers, which contain elemental sulfur, also serve as preventive measures (agrarheute 2018 & BLW 2018).
 
-In the final report of the ZHAW, electric fences and scare killings are mentioned as two classic prevention methods.
+In the final report of the ZHAW, electric fences and scare killings are mentioned as two classic prevention methods.Noise protection is one of the measures to deter wild boars. However, this prevention method has a conflict with local residents who live nearby. The residents could be bothered by the noise.
 
 For our project, there are three research questions. These three research questions are:
 1. How does the movement of the boars change in close and far range of the device? Compare different movement parameters (density, speed, behavior pattern) between device present/not present. 
