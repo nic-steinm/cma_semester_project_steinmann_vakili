@@ -286,6 +286,20 @@ write.csv(wss_data, file = "data/range_class_data.csv")
 ```{r}
 ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
   geom_line()
+
+boar_locs_filtered%>%
+  ggplot(aes(E, N, col="speed")) +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
+
+joined_tables_device_locs%>%
+  ggplot(aes(E, N, col="lautstaerke")) +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
 ```
 
 
