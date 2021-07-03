@@ -283,6 +283,7 @@ write.csv(wss_data, file = "data/range_class_data.csv")
 
 
 ## Overview
+In a first step, an overview of the data is given. This should help make the data understandable.
 ```{r}
 ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
   geom_line()
