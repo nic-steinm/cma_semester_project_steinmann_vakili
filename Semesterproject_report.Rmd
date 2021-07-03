@@ -300,6 +300,10 @@ joined_tables_device_locs%>%
   geom_point() +
   coord_fixed() +
   theme(legend.position = "bottom")
+
+ggplot(boar_locs_filtered, aes(x =moonilumination , y = speed)) +
+  geom_point(mapping=aes(x= moonilumination , y = speed, color= TierName)) +
+  stat_smooth(method = "lm")
 ```
 
 
