@@ -286,13 +286,6 @@ write.csv(wss_data, file = "data/range_class_data.csv")
 ```{r}
 ggplot(boar_locs_filtered, aes(DatetimeUTC,TierID)) +
   geom_line()
-
-boar_locs_filtered%>%
-  ggplot(aes(E, N))  +
-  geom_path() +
-  geom_point() +
-  coord_fixed() +
-  theme(legend.position = "bottom")
 ```
 
 
@@ -305,6 +298,7 @@ Philosophy oneself passion play fearful self noble zarathustra deceptions sexual
 ## Discussion
 
 <!-- the following is just a placeholder text, remove it!-->
+
 
 ## Bibliography
 agrargeute (2018):Praktiker-Tipps: So halten Sie Wildschweine auf Abstand.<https://www.agrarheute.com/tier/rind/praktiker-tipps-so-halten-wildschweine-abstand-534838>
