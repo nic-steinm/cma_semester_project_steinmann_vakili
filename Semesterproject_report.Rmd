@@ -88,7 +88,7 @@ Prominently used in this project are the tidyverse, lubridate, sf, tmap, and ggp
 
 ## Datasets used
 
-For this analysis we used the datasets provided by our course tutors. Naturally, we needed all the boar location data of the survey area which could conveniently be loaded into the R-scripts with the provided "ComputationalMovementAnalysis"-package. Similarly, the wss_locations and the agenda were loaded into our inital data processing and filtering script.
+For this analysis we used the datasets provided by our course tutors. Naturally, we needed all the boar location data of the survey area which could conveniently be loaded into the R-scripts with the provided "ComputationalMovementAnalysis"-package. Similarly, the wss_locations and the agenda were loaded into our initial data processing and filtering script.
 
 ```{r}
 head(schreck_agenda)
