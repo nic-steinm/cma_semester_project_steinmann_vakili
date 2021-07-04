@@ -7,7 +7,10 @@ library(sf)
 library(readr)
 library(tmap)
 library(shiny)
+library(ggplot2)
 library(RColorBrewer)
+library(forcats)
+library(cowplot)
 
 wss_data <- read_delim("data/range_class_data.csv", delim = ",")
 boar_data <- read_delim("data/boar_locations_filtered.csv", delim = ",")
@@ -206,4 +209,48 @@ tm_shape(wss_geom)+
             "Place Name:" = "flurname",
             "Crop:" = "kultur")
           )
-          
+
+#Data overview
+
+
+boar_data %>%
+  mutate(TierName = fct_reorder(TierName, DatetimeUTC,min, .desc = TRUE))
+  
+labels <- paste(c(rep("",length(breaks)-1),">"), breaks)
+
+ggplot(boar_data, aes(DatetimeUTC, TierName, colour = timelag)) +
+  geom_line(lwd = 10) +
+  scale_color_gradientn(name = "Sampling interval", colors = brewer.pal(10, "Spectral"), limits = c(0, 1000), na.value = NA, oob = scales::squish, breaks = seq(0,200,50), labels = labels) +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  guides(color = guide_colorbar(title.position = "top", title.hjust = .5, barwidth = unit(20, "lines"), barheight = unit(.5, "lines")))
+
+
+
+#histogram
+
+boar_data2 <- boar_data%>%
+  mutate(date = as.Date(DatetimeUTC),
+         TierName = ifelse(is.na(TierName),"other",TierName),
+         TierName = fct_lump(TierName, 5, other_level = "other"))%>%
+  group_by(TierName, date)%>%
+  summarise(n = n())%>%
+  mutate(percentile = ntile(n,40))%>%
+  filter(percentile != 40)
+
+wss_data2 <- wss_data
+
+
+ggplot(wss_data2, aes(datum_on, flurname, color = modus))+
+        geom_linerange(aes(xmin = datum_on, xmax = datum_off), size = 5)+
+        ylab("Fixes [n]")+
+        xlab("Date")
+
+ggplot(boar_data2)+
+        geom_bar(width = 1, aes(x = date, y = n, fill = TierName), stat = 'identity')+
+        labs(title = "Temporal overview over the location and device data")+
+        ylab("Fixes [n]")+
+        xlab("Date")
+
+
+
