@@ -43,6 +43,7 @@ library(gridExtra)
 # Abstract
 
 <!-- the following is just a placeholder text, remove it!-->
+This project is about the motion analysis of wild boars. It is about the wild boar fright, i.e. which measures are effective to deter the wild boars. The data from the Computational Movement Analysis course was made available for the analysis.
 
 
 # Introduction
@@ -682,4 +683,6 @@ Bayerisches Landwirtschaftliches Wochenblatt (BLW) (2018): Wildschweinschäden-1
 Birch, Colin P.D. ; Oom, Sander P. ; Beecham, Jonathan A.: Rectangular and hexagonal grids used for observation, experiment and simulation in ecology. In: Ecological Modelling Bd. 206 (2007), Nr. 3–4, S. 347–359
 
 Suter, Stefan ; Stoller, Sandro ; Sigrist, Benjamin: Prävention von Wildschweinschäden in der Landwirtschaft und Management von Wildschweinen in Schutzgebieten - Schlussbericht, 2018
+
+
 
