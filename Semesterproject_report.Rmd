@@ -43,7 +43,7 @@ library(gridExtra)
 # Abstract
 
 <!-- the following is just a placeholder text, remove it!-->
-This project is about the motion analysis of wild boars. It is about the wild boar fright, i.e. which measures are effective to deter the wild boars. The data from the Computational Movement Analysis course was made available for the analysis.
+This project is about the motion analysis of wild boars. It is about the wild boar fright, i.e. which measures are effective to deter the wild boars. The data from the Computational Movement Analysis course was made available for the analysis.Various statistical methods were used to answer the research questions.
 
 
 # Introduction
