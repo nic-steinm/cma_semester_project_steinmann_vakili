@@ -98,7 +98,7 @@ head(wildschwein_BE)
 
 ## Pre-Processing
 
-The Wildschweinschreck locations first needed to be reprojected as they initally were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. As the Wildschweinschreck serves to protect crops so it is sensible to filter it this way.
+The Wildschweinschreck locations first needed to be reprojected as they initially were provided in the WGS 84 geometric projection. The LV95 metric coordinates were then written into two seperate columns, E and N. In the next step, the locations were joined with the agenda. As some devices were activated multiple times at the exact same location, there are more entries in the agenda-table and thus the joined table has more entries than the original location table. A filter was applied to remove the deterrence devices activated in late Fall, Winter and early Spring. We wanted to observe the behavior of individuals during the vegetation period set between May and September. As the Wildschweinschreck serves to protect crops so it is sensible to filter it this way.
 
 ```{r}
 
